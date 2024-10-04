@@ -1,9 +1,5 @@
 package com.qn_org.backend.controllers.auth;
-import com.qn_org.backend.controllers.student.StudentInfoService;
-import com.qn_org.backend.models.StaffInfo;
 import com.qn_org.backend.models.enums.UserType;
-import com.qn_org.backend.repositories.StaffRepository;
-import com.qn_org.backend.repositories.StudentRepository;
 import lombok.*;
 
 import java.util.UUID;
