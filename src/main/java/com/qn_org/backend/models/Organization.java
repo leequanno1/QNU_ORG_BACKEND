@@ -1,8 +1,14 @@
 package com.qn_org.backend.models;
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "ORGANIZATION")
 public class Organization {
 
@@ -38,85 +44,4 @@ public class Organization {
     @Column(name = "DEL_FLG", nullable = false)
     private boolean delFlg = false;
 
-    // Getters and Setters
-
-    public String getOrgId() {
-        return orgId;
-    }
-
-    public String getOrgName() {
-        return orgName;
-    }
-
-    public String getOrgDescription() {
-        return orgDescription;
-    }
-
-    public String getOrgAvatar() {
-        return orgAvatar;
-    }
-
-    public String getOrgBackground() {
-        return orgBackground;
-    }
-
-    public int getMembers() {
-        return members;
-    }
-
-    public int getPosts() {
-        return posts;
-    }
-
-    public int getEvents() {
-        return events;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public boolean isDelFlg() {
-        return delFlg;
-    }
-
-    public void setOrgId(String orgId) {
-        this.orgId = orgId;
-    }
-
-    public void setOrgName(String orgName) {
-        this.orgName = orgName;
-    }
-
-    public void setOrgDescription(String orgDescription) {
-        this.orgDescription = orgDescription;
-    }
-
-    public void setOrgAvatar(String orgAvatar) {
-        this.orgAvatar = orgAvatar;
-    }
-
-    public void setOrgBackground(String orgBackground) {
-        this.orgBackground = orgBackground;
-    }
-
-    public void setMembers(int members) {
-        this.members = members;
-    }
-
-    public void setPosts(int posts) {
-        this.posts = posts;
-    }
-
-    public void setEvents(int events) {
-        this.events = events;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
-
-    public void setDelFlg(boolean delFlg) {
-        this.delFlg = delFlg;
-    }
 }

@@ -1,8 +1,14 @@
 package com.qn_org.backend.models;
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "VALIDATION_CODE")
 public class ValidationCode {
 
@@ -27,51 +33,4 @@ public class ValidationCode {
     @Column(name = "DEL_FLG", nullable = false)
     private boolean delFlg = false;
 
-    public int getValidationId() {
-        return validationId;
-    }
-
-    public String getValidationEmail() {
-        return validationEmail;
-    }
-
-    public String getValidationCode() {
-        return validationCode;
-    }
-
-    public int getUserType() {
-        return userType;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public boolean isDelFlg() {
-        return delFlg;
-    }
-
-    public void setValidationId(int validationId) {
-        this.validationId = validationId;
-    }
-
-    public void setValidationEmail(String validationEmail) {
-        this.validationEmail = validationEmail;
-    }
-
-    public void setValidationCode(String validationCode) {
-        this.validationCode = validationCode;
-    }
-
-    public void setUserType(int userType) {
-        this.userType = userType;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
-
-    public void setDelFlg(boolean delFlg) {
-        this.delFlg = delFlg;
-    }
 }

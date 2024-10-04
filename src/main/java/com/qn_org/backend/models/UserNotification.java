@@ -1,8 +1,17 @@
 package com.qn_org.backend.models;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "USER_NOTIFICATION")
 public class UserNotification {
 
@@ -28,52 +37,5 @@ public class UserNotification {
     @Column(name = "DEL_DATE", nullable = false)
     private Date delDate;
 
-    public String getUserNotiId() {
-        return userNotiId;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public ObservableNotification getNotification() {
-        return notification;
-    }
-
-    public boolean isRead() {
-        return isRead;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public Date getDelDate() {
-        return delDate;
-    }
-
-    public void setUserNotiId(String userNotiId) {
-        this.userNotiId = userNotiId;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setNotification(ObservableNotification notification) {
-        this.notification = notification;
-    }
-
-    public void setRead(boolean read) {
-        isRead = read;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
-
-    public void setDelDate(Date delDate) {
-        this.delDate = delDate;
-    }
 }
 

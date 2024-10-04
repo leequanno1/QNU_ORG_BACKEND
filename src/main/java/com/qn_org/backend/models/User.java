@@ -1,10 +1,19 @@
 package com.qn_org.backend.models;
 import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "USER")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @Column(name = "USER_ID", nullable = false, unique = true)
@@ -38,85 +47,40 @@ public class User {
     @Column(name = "PASSWORD_VALIDATED_FLG", nullable = false)
     private boolean passwordValidatedFlg = false;
 
-    // Getters and Setters
 
-    public String getUserId() {
-        return userId;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
+    @Override
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    @Override
+    public String getUsername() {
+        return this.userId;
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    public String getUserInfoKey() {
-        return userInfoKey;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
     }
 
-    public void setUserInfoKey(String userInfoKey) {
-        this.userInfoKey = userInfoKey;
+    @Override
+    public boolean isEnabled() {
+        return !this.delFlg;
     }
 
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public int getUserType() {
-        return userType;
-    }
-
-    public void setUserType(int userType) {
-        this.userType = userType;
-    }
-
-    public String getUserAvatar() {
-        return userAvatar;
-    }
-
-    public void setUserAvatar(String userAvatar) {
-        this.userAvatar = userAvatar;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
-
-    public boolean isDelFlg() {
-        return delFlg;
-    }
-
-    public void setDelFlg(boolean delFlg) {
-        this.delFlg = delFlg;
-    }
-
-    public boolean isPasswordValidatedFlg() {
-        return passwordValidatedFlg;
-    }
-
-    public void setPasswordValidatedFlg(boolean passwordValidatedFlg) {
-        this.passwordValidatedFlg = passwordValidatedFlg;
-    }
 }

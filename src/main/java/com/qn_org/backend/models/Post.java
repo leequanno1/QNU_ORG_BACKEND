@@ -1,8 +1,14 @@
 package com.qn_org.backend.models;
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "POST")
 public class Post {
 
@@ -30,60 +36,5 @@ public class Post {
     @Column(name = "DEL_FLG", nullable = false)
     private boolean delFlg = false;
 
-    public String getPostId() {
-        return postId;
-    }
-
-    public Member getPoster() {
-        return poster;
-    }
-
-    public String getPostTitle() {
-        return postTitle;
-    }
-
-    public String getPostContent() {
-        return postContent;
-    }
-
-    public int getComments() {
-        return comments;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public boolean isDelFlg() {
-        return delFlg;
-    }
-
-    public void setPostId(String postId) {
-        this.postId = postId;
-    }
-
-    public void setPoster(Member poster) {
-        this.poster = poster;
-    }
-
-    public void setPostTitle(String postTitle) {
-        this.postTitle = postTitle;
-    }
-
-    public void setPostContent(String postContent) {
-        this.postContent = postContent;
-    }
-
-    public void setComments(int comments) {
-        this.comments = comments;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
-
-    public void setDelFlg(boolean delFlg) {
-        this.delFlg = delFlg;
-    }
 }
 

@@ -1,8 +1,14 @@
 package com.qn_org.backend.models;
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "OBSERVERBLE_NOTIFICATION")
 public class ObservableNotification {
 
@@ -26,51 +32,4 @@ public class ObservableNotification {
     @Temporal(TemporalType.TIMESTAMP)
     private Date insDate;
 
-    public String getNotificationId() {
-        return notificationId;
-    }
-
-    public String getNotiAvatar() {
-        return notiAvatar;
-    }
-
-    public String getNotiName() {
-        return notiName;
-    }
-
-    public int getNotiType() {
-        return notiType;
-    }
-
-    public String getTargetUrl() {
-        return targetUrl;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public void setNotificationId(String notificationId) {
-        this.notificationId = notificationId;
-    }
-
-    public void setNotiAvatar(String notiAvatar) {
-        this.notiAvatar = notiAvatar;
-    }
-
-    public void setNotiName(String notiName) {
-        this.notiName = notiName;
-    }
-
-    public void setNotiType(int notiType) {
-        this.notiType = notiType;
-    }
-
-    public void setTargetUrl(String targetUrl) {
-        this.targetUrl = targetUrl;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
 }

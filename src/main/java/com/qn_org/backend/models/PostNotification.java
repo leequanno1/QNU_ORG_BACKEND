@@ -1,8 +1,14 @@
 package com.qn_org.backend.models;
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "POST_NOTIFICATION")
 public class PostNotification {
 
@@ -27,51 +33,4 @@ public class PostNotification {
     @Column(name = "DEL_FLG", nullable = false)
     private boolean delFlg = false;
 
-    public String getPostNotiId() {
-        return postNotiId;
-    }
-
-    public String getPosterAvt() {
-        return posterAvt;
-    }
-
-    public String getPosterName() {
-        return posterName;
-    }
-
-    public Post getPost() {
-        return post;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public boolean isDelFlg() {
-        return delFlg;
-    }
-
-    public void setPostNotiId(String postNotiId) {
-        this.postNotiId = postNotiId;
-    }
-
-    public void setPosterAvt(String posterAvt) {
-        this.posterAvt = posterAvt;
-    }
-
-    public void setPosterName(String posterName) {
-        this.posterName = posterName;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
-
-    public void setDelFlg(boolean delFlg) {
-        this.delFlg = delFlg;
-    }
 }

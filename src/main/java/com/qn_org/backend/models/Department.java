@@ -1,8 +1,14 @@
 package com.qn_org.backend.models;
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "DEPARTMENT")
 public class Department {
 
@@ -20,35 +26,4 @@ public class Department {
     @Temporal(TemporalType.TIMESTAMP)
     private Date insDate;
 
-    public String getDepartmentId() {
-        return departmentId;
-    }
-
-    public String getDepName() {
-        return depName;
-    }
-
-    public boolean isDelFlg() {
-        return delFlg;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public void setDepartmentId(String departmentId) {
-        this.departmentId = departmentId;
-    }
-
-    public void setDepName(String depName) {
-        this.depName = depName;
-    }
-
-    public void setDelFlg(boolean delFlg) {
-        this.delFlg = delFlg;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
 }

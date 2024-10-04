@@ -1,6 +1,9 @@
 package com.qn_org.backend.models;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Date;
 
@@ -9,16 +12,16 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @RequiredArgsConstructor
-@Table(name = "STUDENT_INFO")
-public class StudentInfo {
+@Table(name = "STAFF_INFO")
+public class StaffInfo {
 
     @Id
-    @Column(name = "STUDENT_KEY", nullable = false, unique = true)
-    private String studentKey;
+    @Column(name = "STAFF_KEY", nullable = false, unique = true)
+    private String staffKey;
 
     @ManyToOne
-    @JoinColumn(name = "MAJOR_ID")
-    private Major major;
+    @JoinColumn(name = "DEP_ID")
+    private Department department;
 
     @Column(name = "FIRST_NAME")
     private String firstName;
@@ -32,11 +35,13 @@ public class StudentInfo {
     @Column(name = "PHONE_NUMBER")
     private String phoneNumber;
 
+    @Column(name = "IS_TEACHER", nullable = false)
+    private boolean isTeacher = true;
+
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date insDate;
 
     @Column(name = "DEL_FLG", nullable = false)
     private boolean delFlg = false;
-
 }
