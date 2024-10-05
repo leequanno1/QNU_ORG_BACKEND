@@ -1,6 +1,9 @@
 package com.qn_org.backend.controllers.auth;
 
+import com.qn_org.backend.responses.ApiResponse;
+import com.qn_org.backend.responses.QnuResponseEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,12 +17,12 @@ public class AuthenticationController {
 
     private final AuthenticationService service;
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(service.register(request));
+    public QnuResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
+        return new QnuResponseEntity<>(service.register(request), HttpStatus.OK);
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
-        return ResponseEntity.ok(service.authenticate(request));
+    public QnuResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+        return new QnuResponseEntity<>(service.authenticate(request), HttpStatus.OK);
     }
 }
