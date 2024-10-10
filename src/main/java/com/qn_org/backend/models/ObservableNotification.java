@@ -30,6 +30,6 @@ public class ObservableNotification {
 
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date insDate;
+    private Date insDate = new Date();
 
 }

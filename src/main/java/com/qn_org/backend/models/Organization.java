@@ -22,10 +22,10 @@ public class Organization {
     @Column(name = "ORG_DESCRIPTION")
     private String orgDescription;
 
-    @Column(name = "ORG_AVARTA", nullable = false)
+    @Column(name = "ORG_AVATAR")
     private String orgAvatar;
 
-    @Column(name = "ORG_BACKGROUD", nullable = false)
+    @Column(name = "ORG_BACKGROUND")
     private String orgBackground;
 
     @Column(name = "MEMBERS", nullable = false)
@@ -39,7 +39,7 @@ public class Organization {
 
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date insDate;
+    private Date insDate = new Date();
 
     @Column(name = "DEL_FLG", nullable = false)
     private boolean delFlg = false;

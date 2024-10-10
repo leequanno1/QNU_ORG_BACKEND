@@ -31,10 +31,13 @@ public class Post {
 
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date insDate;
+    private Date insDate = new Date();
 
     @Column(name = "DEL_FLG", nullable = false)
     private boolean delFlg = false;
+
+    @Column(name = "IS_APPROVED", nullable = false)
+    private boolean isApproved = false;
 
 }
 

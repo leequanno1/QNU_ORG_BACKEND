@@ -37,9 +37,12 @@ public class User implements UserDetails {
     @Column(name = "USER_AVATAR")
     private String userAvatar;
 
+    @Column(name = "USER_BACKGROUND")
+    private String userBackground;
+
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date insDate;
+    private Date insDate = new Date();
 
     @Column(name = "DEL_FLG", nullable = false)
     private boolean delFlg = false;

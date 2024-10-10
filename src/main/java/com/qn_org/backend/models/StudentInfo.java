@@ -34,7 +34,7 @@ public class StudentInfo {
 
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date insDate;
+    private Date insDate = new Date();
 
     @Column(name = "DEL_FLG", nullable = false)
     private boolean delFlg = false;

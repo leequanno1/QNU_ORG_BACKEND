@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Calendar;
 import java.util.Date;
 
 @Data
@@ -32,10 +33,17 @@ public class UserNotification {
 
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date insDate;
+    private Date insDate = new Date();
 
     @Column(name = "DEL_DATE", nullable = false)
-    private Date delDate;
+    private Date delDate = dateAfter3Months();
+
+    private Date dateAfter3Months() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MONTH, 3);
+        return calendar.getTime();
+    }
 
 }
 
