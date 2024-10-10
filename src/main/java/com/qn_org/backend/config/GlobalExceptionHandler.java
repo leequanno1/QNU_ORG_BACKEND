@@ -1,28 +1,29 @@
 package com.qn_org.backend.config;
 
-import com.qn_org.backend.responses.ApiResponse;
+import com.qn_org.backend.responses.QnuResponseEntity;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+
 @RestControllerAdvice
-@ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<String>> handleInternalServerError(Exception ex) {
-        return new ResponseEntity<>(new ApiResponse<>(500, "Internal Server Error"), HttpStatus.INTERNAL_SERVER_ERROR);
+
+    @ExceptionHandler(AccountExpiredException.class)
+    public QnuResponseEntity<Object> handleInternalServerError(Exception ex) {
+        return new QnuResponseEntity<>("Unauthorized", HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(SecurityException.class)
-    public ResponseEntity<ApiResponse<String>> handleForbiddenException(SecurityException ex) {
-        return new ResponseEntity<>(new ApiResponse<>(403, "Forbidden"), HttpStatus.FORBIDDEN);
+    @ExceptionHandler(io.jsonwebtoken.security.SignatureException.class)
+    public QnuResponseEntity<Object> handleSignatureException(Exception ex){
+        return new QnuResponseEntity<>("Token is invalid", HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<ApiResponse<String>> handleExpiredJwtException(ExpiredJwtException ex) {
-        return new ResponseEntity<>(new ApiResponse<>(403, "Jwt token is expired"), HttpStatus.FORBIDDEN);
+    public QnuResponseEntity<Object> handleForbiddenException(SecurityException ex) {
+        return new QnuResponseEntity<>("Token expired", HttpStatus.FORBIDDEN);
+
     }
 }
