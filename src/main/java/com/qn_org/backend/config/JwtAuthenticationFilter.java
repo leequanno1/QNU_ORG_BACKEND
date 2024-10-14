@@ -36,13 +36,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String userId;
         try {
-            if(authHeader == null || !authHeader.startsWith("Bearer")) {
-                if(request.getRequestURI().contains("/api/v1/auth/")
-                        || request.getRequestURI().contains("/v3/api-docs/")
-                        || request.getRequestURI().contains("/swagger-ui/")){
-                    filterChain.doFilter(request,response);
-                    return;
-                }
+            if(request.getRequestURI().contains("/api/v1/auth/")
+                    || request.getRequestURI().contains("/v3/api-docs/")
+                    || request.getRequestURI().contains("/swagger-ui/")){
+                filterChain.doFilter(request,response);
+                return;
+            }else if(authHeader == null || !authHeader.startsWith("Bearer")) {
                 throw new AccountExpiredException("");
             }
             jwt = authHeader.substring(7);
@@ -65,7 +64,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request,response);
         } catch (Exception e) {
-            handlerExceptionResolver.resolveException(request,response,null, e);
+            if(e instanceof ExpiredJwtException) {
+                handlerExceptionResolver.resolveException(request,response,null, new AccountExpiredException("Expired"));
+            } else {
+                handlerExceptionResolver.resolveException(request,response,null, e);
+            }
         }
     }
 }

@@ -9,9 +9,11 @@ import com.qn_org.backend.models.User;
 import com.qn_org.backend.models.enums.UserType;
 import com.qn_org.backend.repositories.UserRepository;
 import com.qn_org.backend.services.QnuService;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ import java.util.Date;
 public class AuthenticationService implements QnuService<User> {
 
     private final UserRepository repository;
+    private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -87,5 +90,14 @@ public class AuthenticationService implements QnuService<User> {
             }
         }
         return res;
+    }
+
+    public Boolean validation(String bearerToken) {
+        if(!bearerToken.startsWith("Bearer")){
+            throw new ExpiredJwtException(null, null,null);
+        }
+        var jwt = bearerToken.substring(7);
+        var userId = jwtService.extractUsername(jwt);
+        return jwtService.isTokenValid(jwt,userDetailsService.loadUserByUsername(userId));
     }
 }
