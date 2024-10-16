@@ -64,6 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request,response);
         } catch (Exception e) {
+            e.printStackTrace();
             if(e instanceof ExpiredJwtException) {
                 handlerExceptionResolver.resolveException(request,response,null, new AccountExpiredException("Expired"));
             } else {

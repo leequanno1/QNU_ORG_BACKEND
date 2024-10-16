@@ -1,15 +1,14 @@
 package com.qn_org.backend.controllers.auth;
 
 import com.qn_org.backend.responses.QnuResponseEntity;
-import com.qn_org.backend.services.CookieConverter;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.SignatureException;
 
 
 @RestController
@@ -30,12 +29,71 @@ public class AuthenticationController {
     }
 
     @PostMapping("/validate")
-    public QnuResponseEntity<Boolean> validate(@RequestBody TokenRequest request) {
+    public QnuResponseEntity<ValidateResponse> validate(@RequestBody ValidateRequest request) {
         return new QnuResponseEntity<>(service.validation(request.getBearerToken()), HttpStatus.OK);
     }
 
+    @ExceptionHandler(Exception.class)
+    public QnuResponseEntity<ValidateResponse> exHandler (Exception ex) {
+        ex.printStackTrace();
+        ValidateResponse response = ValidateResponse
+                                    .builder()
+                                    .isValidated(false)
+                                    .problemCause(ex.getMessage())
+                                    .build();
+        return new QnuResponseEntity<>(response,HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(io.jsonwebtoken.security.SignatureException.class)
+    public QnuResponseEntity<ValidateResponse> SignatureExceptionHandler(SignatureException ex) {
+        ValidateResponse response = ValidateResponse
+                .builder()
+                .isValidated(false)
+                .problemCause(ex.getMessage())
+                .build();
+        return new QnuResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(ExpiredJwtException.class)
-    public QnuResponseEntity<Boolean> validate() {
-        return new QnuResponseEntity<>(false, HttpStatus.FORBIDDEN);
+    public QnuResponseEntity<ValidateResponse> ExpiredJwtExceptionHandler(ExpiredJwtException ex) {
+        ValidateResponse response = ValidateResponse
+                .builder()
+                .isValidated(false)
+                .problemCause(ex.getMessage())
+                .build();
+        return new QnuResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public QnuResponseEntity<ValidateResponse> IllegalArgumentExceptionHandler(IllegalArgumentException e) {
+        e.printStackTrace();
+        ValidateResponse response = ValidateResponse
+                .builder()
+                .isValidated(false)
+                .problemCause(e.getMessage())
+                .build();
+        return new QnuResponseEntity<>(response,HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(MalformedJwtException.class)
+    public QnuResponseEntity<ValidateResponse> MalformedJwtExceptionHandler(MalformedJwtException e) {
+        e.printStackTrace();
+        ValidateResponse response = ValidateResponse
+                .builder()
+                .isValidated(false)
+                .problemCause(e.getMessage())
+                .build();
+        return new QnuResponseEntity<>(response,HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(UnsupportedJwtException.class)
+    public QnuResponseEntity<ValidateResponse> UnsupportedJwtExceptionHandler(UnsupportedJwtException e) {
+        e.printStackTrace();
+        ValidateResponse response = ValidateResponse
+                .builder()
+                .isValidated(false)
+                .problemCause(e.getMessage())
+                .build();
+        return new QnuResponseEntity<>(response,HttpStatus.FORBIDDEN);
     }
 }

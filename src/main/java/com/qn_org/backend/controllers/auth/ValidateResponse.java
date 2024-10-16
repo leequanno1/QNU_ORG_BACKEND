@@ -5,10 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class TokenRequest {
-    private String bearerToken;
+public class ValidateResponse {
+    private boolean isValidated;
+    private String problemCause;
 }

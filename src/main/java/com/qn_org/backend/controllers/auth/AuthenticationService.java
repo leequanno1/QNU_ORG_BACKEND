@@ -92,12 +92,17 @@ public class AuthenticationService implements QnuService<User> {
         return res;
     }
 
-    public Boolean validation(String bearerToken) {
+    public ValidateResponse validation(String bearerToken) {
         if(!bearerToken.startsWith("Bearer")){
             throw new ExpiredJwtException(null, null,null);
         }
         var jwt = bearerToken.substring(7);
         var userId = jwtService.extractUsername(jwt);
-        return jwtService.isTokenValid(jwt,userDetailsService.loadUserByUsername(userId));
+        System.out.println(userId);
+        return ValidateResponse
+                .builder()
+                .isValidated(jwtService.isTokenValid(jwt,userDetailsService.loadUserByUsername(userId)))
+                .problemCause("")
+                .build();
     }
 }
