@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class StaffInfoService {
     private final StaffRepository repository;
 
-    public void update(StaffInfo info) {
+    public void save(StaffInfo info) {
         repository.save(info);
     }
 }

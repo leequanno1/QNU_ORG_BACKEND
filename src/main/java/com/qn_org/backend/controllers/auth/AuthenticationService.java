@@ -43,6 +43,7 @@ public class AuthenticationService implements QnuService<User> {
                 .passwordValidatedFlg(false)
                 .build();
         repository.save(user);
+        handleSaveRepository(user);
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
@@ -70,23 +71,17 @@ public class AuthenticationService implements QnuService<User> {
         if(!res) {
             UserType typeEnum = UserType.fromValue(entity.getUserType());
             switch (typeEnum){
-                case STAFF -> {
-                    staffInfoService.update(StaffInfo.builder()
-                            .staffKey(entity.getUserInfoKey())
-                            .isTeacher(false)
-                            .build());
-                }
-                case TEACHER -> {
-                    staffInfoService.update(StaffInfo.builder()
-                            .staffKey(entity.getUserInfoKey())
-                            .isTeacher(true)
-                            .build());
-                }
-                case STUDENT -> {
-                    studentInfoService.update(StudentInfo.builder()
-                            .studentKey(entity.getUserInfoKey())
-                            .build());
-                }
+                case STAFF -> staffInfoService.save(StaffInfo.builder()
+                        .staffKey(entity.getUserInfoKey())
+                        .isTeacher(false)
+                        .build());
+                case TEACHER -> staffInfoService.save(StaffInfo.builder()
+                        .staffKey(entity.getUserInfoKey())
+                        .isTeacher(true)
+                        .build());
+                case STUDENT -> studentInfoService.save(StudentInfo.builder()
+                        .studentKey(entity.getUserInfoKey())
+                        .build());
             }
         }
         return res;

@@ -1,6 +1,9 @@
 package com.qn_org.backend.controllers.auth;
 import com.qn_org.backend.models.enums.UserType;
-import lombok.*;
+import lombok.Data;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
