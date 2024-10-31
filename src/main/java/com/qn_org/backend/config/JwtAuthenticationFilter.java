@@ -36,9 +36,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String userId;
         try {
+            System.out.println(request.getRequestURI());
             if(request.getRequestURI().contains("/api/v1/auth/")
                     || request.getRequestURI().contains("/v3/api-docs")
-                    || request.getRequestURI().contains("/swagger-ui")){
+                    || request.getRequestURI().contains("/swagger-ui")
+                    || request.getRequestURI().contains("/api/image")
+                    || request.getRequestURI().contains("/favicon.ico")){
                 filterChain.doFilter(request,response);
                 return;
             }else if(authHeader == null || !authHeader.startsWith("Bearer")) {

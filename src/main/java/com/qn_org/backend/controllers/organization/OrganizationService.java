@@ -1,14 +1,14 @@
 package com.qn_org.backend.controllers.organization;
 
+import com.qn_org.backend.common_requests.FromToIndexRequest;
+import com.qn_org.backend.controllers.image.ImageService;
 import com.qn_org.backend.models.Organization;
 import com.qn_org.backend.repositories.OrganizationRepository;
 import com.qn_org.backend.services.QnuService;
 import com.qn_org.backend.services.exceptions.IdNotExistException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,14 +19,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OrganizationService implements QnuService<Organization> {
 
-    private final String imageDirectory = "D:/GitHub/ORG/backend/src/public/images/";
     private final OrganizationRepository repository;
+    private final ImageService imageService;
 
     public Organization createOrganization(CreateOrganizationRequest request) throws IOException {
         String avtName = "";
         String backgroundName = "";
-        avtName = handleSaveImage(request.getOrgAvatar(), generateImageName());
-        backgroundName = handleSaveImage(request.getOrgBackGround(), generateImageName());
+        avtName = imageService.handleSaveImage(request.getOrgAvatar(), generateImageName());
+        backgroundName = imageService.handleSaveImage(request.getOrgBackGround(), generateImageName());
         Organization org = Organization.builder()
                 .orgId("ORG_" + UUID.randomUUID())
                 .orgAvatar(avtName)
@@ -49,46 +49,26 @@ public class OrganizationService implements QnuService<Organization> {
         return false;
     }
 
-    private String handleSaveImage(MultipartFile image, String imageName) throws IOException {
-        if(!image.isEmpty()) {
-            String originalName = image.getOriginalFilename() == null ? "" : image.getOriginalFilename();
-            String extension = "";
-            if(originalName.contains(".")) {
-                extension = originalName.substring(originalName.lastIndexOf("."));
-            }
-            File directory = new File(imageDirectory);
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
-            File destinationFile = new File(directory, imageName + extension);
-            image.transferTo(destinationFile);
-            return imageName + extension;
-        }
-        return "";
-    }
-
     private String generateImageName(){
         long time = new Date().getTime();
         return "IMG_" + time + UUID.randomUUID();
     }
 
-    public List<Organization> getAll(FormToIndexRequest request) {
-        if(request.getTo() - request.getFrom() < 0){
+    public List<Organization> getAll(FromToIndexRequest request) {
+        if(!request.isValid()){
             return new ArrayList<>();
         }
-        int limit = request.getTo() - request.getFrom() + 1;
-        int offset = request.getFrom();
-        return repository.getAll(limit,offset);
+        return repository.getAll(request.getLimit(),request.getOffset());
     }
 
     public Organization updateOrganization(UpdateOrganizationRequest request) throws IdNotExistException, IOException {
         try {
             Organization org = repository.getReferenceById(request.getOrgId());
             if(request.getOrgAvatar() != null && !request.getOrgAvatar().isEmpty()) {
-                org.setOrgAvatar(handleSaveImage(request.getOrgAvatar(),generateImageName()));
+                org.setOrgAvatar(imageService.handleSaveImage(request.getOrgAvatar(),generateImageName()));
             }
             if(request.getOrgBackGround() != null && !request.getOrgBackGround().isEmpty()) {
-                org.setOrgBackground(handleSaveImage(request.getOrgBackGround(),generateImageName()));
+                org.setOrgBackground(imageService.handleSaveImage(request.getOrgBackGround(),generateImageName()));
             }
             if(request.getOrgName() != null && !request.getOrgName().isEmpty()) org.setOrgName(request.getOrgName());
             if(request.getOrgDescription() != null && !request.getOrgDescription().isEmpty()) org.setOrgDescription(request.getOrgDescription());
@@ -120,13 +100,11 @@ public class OrganizationService implements QnuService<Organization> {
         }
     }
 
-    public List<Organization> getDeleted(FormToIndexRequest request) {
-        if(request.getTo() - request.getFrom() < 0){
+    public List<Organization> getDeleted(FromToIndexRequest request) {
+        if(!request.isValid()){
             return new ArrayList<>();
         }
-        int limit = request.getTo() - request.getFrom() + 1;
-        int offset = request.getFrom();
-        return repository.getDeleted(limit,offset);
+        return repository.getDeleted(request.getLimit(),request.getOffset());
     }
 
     public Integer getAllTotal() {

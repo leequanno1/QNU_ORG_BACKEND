@@ -58,6 +58,9 @@ public class User implements UserDetails {
     @Column(name = "PASSWORD_VALIDATED_FLG", nullable = false)
     private boolean passwordValidatedFlg = false;
 
+    @Column(name = "IS_SUPER_ADMIN", nullable = false)
+    private boolean isSuperAdmin = false;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

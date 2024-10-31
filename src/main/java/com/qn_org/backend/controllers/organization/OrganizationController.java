@@ -1,5 +1,6 @@
 package com.qn_org.backend.controllers.organization;
 
+import com.qn_org.backend.common_requests.FromToIndexRequest;
 import com.qn_org.backend.models.Organization;
 import com.qn_org.backend.responses.QnuResponseEntity;
 import com.qn_org.backend.services.exceptions.IdNotExistException;
@@ -24,12 +25,12 @@ public class OrganizationController {
     }
 
     @GetMapping("/get-all")
-    public QnuResponseEntity<List<Organization>> getAll(@RequestBody FormToIndexRequest request) {
+    public QnuResponseEntity<List<Organization>> getAll(@RequestBody FromToIndexRequest request) {
         return new QnuResponseEntity<>(service.getAll(request),HttpStatus.OK);
     }
 
     @GetMapping("/get-deleted")
-    public QnuResponseEntity<List<Organization>> getDeleted(@RequestBody FormToIndexRequest request) {
+    public QnuResponseEntity<List<Organization>> getDeleted(@RequestBody FromToIndexRequest request) {
         return new QnuResponseEntity<>(service.getDeleted(request),HttpStatus.OK);
     }
 

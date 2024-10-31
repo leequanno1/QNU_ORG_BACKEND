@@ -1,6 +1,7 @@
 package com.qn_org.backend.controllers.auth;
 
 import com.qn_org.backend.responses.QnuResponseEntity;
+import com.qn_org.backend.services.exceptions.EditorNoAuthorityException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -31,6 +32,11 @@ public class AuthenticationController {
     @PostMapping("/validate")
     public QnuResponseEntity<ValidateResponse> validate(@RequestBody ValidateRequest request) {
         return new QnuResponseEntity<>(service.validation(request.getBearerToken()), HttpStatus.OK);
+    }
+
+    @PutMapping("/multiple_register")
+    public QnuResponseEntity<String> multipleRegister(@RequestBody MultipleRegisterRequest request) throws EditorNoAuthorityException {
+        return new QnuResponseEntity<>(service.multipleRegister(request), HttpStatus.OK);
     }
 
     @ExceptionHandler(Exception.class)

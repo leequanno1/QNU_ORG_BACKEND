@@ -19,6 +19,10 @@ public class RegisterRequest {
     public int userType;
 
     public String handleGetUserInfoKey() {
+        return handleGetUserInfoKey(this.userType);
+    }
+
+    public static String handleGetUserInfoKey(int userType) {
         String startStaff = "STA_";
         String startTeacher = "TEA_";
         String startStudent = "STU_";

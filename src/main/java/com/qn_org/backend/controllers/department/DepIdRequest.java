@@ -1,15 +1,14 @@
-package com.qn_org.backend.controllers.organization;
+package com.qn_org.backend.controllers.department;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@Builder
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor
-public class FormToIndexRequest {
-    private int from;
-    private int to;
+@Data
+public class DepIdRequest {
+    private String departmentId;
 }

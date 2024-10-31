@@ -49,5 +49,8 @@ public class Post {
     @Column(name = "IS_APPROVED", nullable = false)
     private boolean isApproved = false;
 
+    @Column(name = "ORG_ID")
+    private String orgId;
+
 }
 
