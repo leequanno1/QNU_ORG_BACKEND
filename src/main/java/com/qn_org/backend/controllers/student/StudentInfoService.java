@@ -16,7 +16,7 @@ public class StudentInfoService {
         repository.save(info);
     }
 
-    public StudentInfo update(UpdateStudentInfoRequest request) {
+    public StudentInfoDTO update(UpdateStudentInfoRequest request) {
         StudentInfo studentInfo = repository.getReferenceById(request.getStudentKey());
         if(request.getMajorId() != null && !request.getMajorId().isBlank())
             studentInfo.setMajor(majorRepository.getReferenceById(request.getMajorId()));
@@ -29,10 +29,10 @@ public class StudentInfoService {
         if(request.getPhoneNumber() != null && !request.getPhoneNumber().isBlank())
             studentInfo.setPhoneNumber(request.getPhoneNumber());
         repository.save(studentInfo);
-        return studentInfo;
+        return new StudentInfoDTO(studentInfo);
     }
 
-    public StudentInfo getById(String studentKey) {
-        return repository.getReferenceById(studentKey);
+    public StudentInfoDTO getById(String studentKey) {
+        return new StudentInfoDTO(repository.getReferenceById(studentKey));
     }
 }

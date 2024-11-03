@@ -9,6 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,24 +40,48 @@ public class ImageService {
                         .build());
             }
         }
+        repository.saveAll(images);
         return images;
     }
 
     public String handleSaveImage(MultipartFile image, String imageName) throws IOException {
-        if(!image.isEmpty()) {
+//        if(!image.isEmpty()) {
+//            String originalName = image.getOriginalFilename() == null ? "" : image.getOriginalFilename();
+//            String extension = "";
+//            if(originalName.contains(".")) {
+//                extension = originalName.substring(originalName.lastIndexOf("."));
+//            }
+//            File directory = new File(imageDirectory);
+//            if (!directory.exists()) {
+//                directory.mkdirs();
+//            }
+//            File destinationFile = new File(directory, imageName + extension);
+//            image.transferTo(destinationFile);
+//            return imageName + extension;
+//        }
+//        return "";
+        if (!image.isEmpty()) {
             String originalName = image.getOriginalFilename() == null ? "" : image.getOriginalFilename();
             String extension = "";
-            if(originalName.contains(".")) {
+            if (originalName.contains(".")) {
                 extension = originalName.substring(originalName.lastIndexOf("."));
             }
+
             File directory = new File(imageDirectory);
             if (!directory.exists()) {
                 directory.mkdirs();
             }
-            File destinationFile = new File(directory, imageName + extension);
-            image.transferTo(destinationFile);
+
+            String fullPath = imageDirectory + File.separator + imageName + extension;
+
+            Files.write(Paths.get(fullPath), image.getBytes());
+
             return imageName + extension;
         }
         return "";
+    }
+
+    public void deleteImage(List<String> delImagesId) {
+        repository.deleteAllById(delImagesId);
     }
 }

@@ -1,4 +1,5 @@
 package com.qn_org.backend.models;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
@@ -20,6 +21,7 @@ import java.util.Date;
 @Entity
 @RequiredArgsConstructor
 @Table(name = "POST")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Post {
 
     @Id

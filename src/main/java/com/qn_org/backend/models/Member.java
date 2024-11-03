@@ -1,12 +1,5 @@
 package com.qn_org.backend.models;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Builder;
 import lombok.AllArgsConstructor;
@@ -26,8 +19,8 @@ public class Member {
     @Column(name = "MEMBER_ID", nullable = false, unique = true)
     private String memberId;
 
-    @ManyToOne
     @JoinColumn(name = "ORG_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Organization organization;
 
     @Column(name = "USER_ID", nullable = false)

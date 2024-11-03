@@ -5,6 +5,7 @@ import com.qn_org.backend.services.exceptions.EditorNoAuthorityException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +36,8 @@ public class AuthenticationController {
     }
 
     @PutMapping("/multiple_register")
-    public QnuResponseEntity<String> multipleRegister(@RequestBody MultipleRegisterRequest request) throws EditorNoAuthorityException {
-        return new QnuResponseEntity<>(service.multipleRegister(request), HttpStatus.OK);
+    public QnuResponseEntity<String> multipleRegister(@RequestBody MultipleRegisterRequest request, HttpServletRequest servletRequest) throws EditorNoAuthorityException {
+        return new QnuResponseEntity<>(service.multipleRegister(request, servletRequest), HttpStatus.OK);
     }
 
     @ExceptionHandler(Exception.class)

@@ -1,4 +1,6 @@
 package com.qn_org.backend.models;
+import com.google.gson.Gson;
+import com.qn_org.backend.services.JsonUtil;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
@@ -12,8 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
@@ -61,6 +65,8 @@ public class User implements UserDetails {
     @Column(name = "IS_SUPER_ADMIN", nullable = false)
     private boolean isSuperAdmin = false;
 
+    @Column(name = "ORG_IDS", nullable = false)
+    private String orgIds = new Gson().toJson(new ArrayList<String>());
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -97,4 +103,11 @@ public class User implements UserDetails {
         return !this.delFlg;
     }
 
+    public static String listToJsonString (List<String> list) {
+        return JsonUtil.listToJsonString(list);
+    }
+
+    public static List<String> jsonStringToList(String jsonString) {
+        return JsonUtil.jsonStringToList(jsonString);
+    }
 }

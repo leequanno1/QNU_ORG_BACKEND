@@ -6,9 +6,11 @@ import com.qn_org.backend.controllers.student.StudentInfoService;
 import com.qn_org.backend.models.*;
 import com.qn_org.backend.models.enums.UserType;
 import com.qn_org.backend.repositories.*;
+import com.qn_org.backend.services.JsonUtil;
 import com.qn_org.backend.services.QnuService;
 import com.qn_org.backend.services.exceptions.EditorNoAuthorityException;
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,6 +50,7 @@ public class AuthenticationService implements QnuService<User> {
                 .userType(request.userType)
                 .insDate(new Date())
                 .passwordValidatedFlg(false)
+                .orgIds(JsonUtil.listToJsonString(new ArrayList<>()))
                 .build();
         repository.save(user);
         handleSaveRepository(user);
@@ -79,15 +82,18 @@ public class AuthenticationService implements QnuService<User> {
             UserType typeEnum = UserType.fromValue(entity.getUserType());
             switch (typeEnum){
                 case STAFF -> staffInfoService.save(StaffInfo.builder()
-                        .staffKey(entity.getUserInfoKey())
+                        .staffKey(entity.getUserId())
                         .isTeacher(false)
+                        .insDate(new Date())
                         .build());
                 case TEACHER -> staffInfoService.save(StaffInfo.builder()
-                        .staffKey(entity.getUserInfoKey())
+                        .staffKey(entity.getUserId())
                         .isTeacher(true)
+                        .insDate(new Date())
                         .build());
                 case STUDENT -> studentInfoService.save(StudentInfo.builder()
-                        .studentKey(entity.getUserInfoKey())
+                        .studentKey(entity.getUserId())
+                        .insDate(new Date())
                         .build());
             }
         }
@@ -108,8 +114,8 @@ public class AuthenticationService implements QnuService<User> {
                 .build();
     }
 
-    public String multipleRegister(MultipleRegisterRequest request) throws EditorNoAuthorityException {
-        User register = repository.getReferenceById(request.getRegisterId());
+    public String multipleRegister(MultipleRegisterRequest request, HttpServletRequest servletRequest) throws EditorNoAuthorityException {
+        User register = repository.getReferenceById(jwtService.extractUserId(servletRequest));
         if(!register.isSuperAdmin())
             throw new EditorNoAuthorityException();
         HashMap<String,Major> majorHashMap = new HashMap<>();

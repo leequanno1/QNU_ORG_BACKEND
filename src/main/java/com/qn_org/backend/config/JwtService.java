@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,12 @@ public class JwtService {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public String extractUserId(HttpServletRequest request) {
+        String authorHeader = request.getHeader("Authorization");
+        String token = authorHeader.substring(7);
+        return this.extractUsername(token);
     }
 
     public <T> T extractClaim(String token, Function<Claims,T> claimsResolver) {

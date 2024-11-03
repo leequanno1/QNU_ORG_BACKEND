@@ -17,7 +17,6 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @RequiredArgsConstructor
 @Table(name = "ORGANIZATION")
 public class Organization {

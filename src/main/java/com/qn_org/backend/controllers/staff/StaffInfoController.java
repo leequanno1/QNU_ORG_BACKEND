@@ -14,12 +14,12 @@ public class StaffInfoController {
     private final StaffInfoService service;
 
     @PutMapping("/update")
-    public QnuResponseEntity<StaffInfo> update(@RequestBody UpdateStaffInfoRequest request) {
+    public QnuResponseEntity<StaffInfoDTO> update(@RequestBody UpdateStaffInfoRequest request) {
         return new QnuResponseEntity<>(service.update(request), HttpStatus.OK);
     }
 
     @GetMapping("/get-by-id")
-    public QnuResponseEntity<StaffInfo> getById(@RequestParam String staffKey) {
+    public QnuResponseEntity<StaffInfoDTO> getById(@RequestParam String staffKey) {
         return new QnuResponseEntity<>(service.getById(staffKey), HttpStatus.OK);
     }
 }

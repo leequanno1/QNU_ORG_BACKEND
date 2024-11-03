@@ -17,48 +17,48 @@ public class MajorService {
     private final MajorRepository majorRepository;
     private final DepartmentRepository depRepository;
 
-    public Major create(CreateMajorRequest request) {
+    public MajorDTO create(CreateMajorRequest request) {
         Major major = Major.builder()
                 .department(depRepository.getReferenceById(request.getDepId()))
                 .majorName(request.getMajorName())
                 .insDate(new Date())
                 .build();
         majorRepository.save(major);
-        return major;
+        return new MajorDTO(major);
     }
 
-    public Major update(UpdateMajorRequest request) {
+    public MajorDTO update(UpdateMajorRequest request) {
         Major major = majorRepository.getReferenceById(request.getMajorId());
         major.setDepartment(depRepository.getReferenceById(request.getDepId()));
         major.setMajorName(request.getMajorName());
         majorRepository.save(major);
-        return major;
+        return new MajorDTO(major);
     }
 
-    public Major delete(MajorIdRequest request) {
+    public MajorDTO delete(MajorIdRequest request) {
         Major major = majorRepository.getReferenceById(request.getMajorId());
         major.setDelFlg(true);
         majorRepository.save(major);
-        return major;
+        return new MajorDTO(major);
     }
 
-    public List<Major> getAll(FromToIndexRequest request) {
+    public List<MajorDTO> getAll(FromToIndexRequest request) {
         if(!request.isValid()) {
             return new ArrayList<>();
         }
-        return majorRepository.getAll(request.getLimit(), request.getOffset());
+        return MajorDTO.fromList(majorRepository.getAll(request.getLimit(), request.getOffset()));
     }
 
 
-    public List<Major> getDeleted(FromToIndexRequest request) {
+    public List<MajorDTO> getDeleted(FromToIndexRequest request) {
         if(!request.isValid()) {
             return new ArrayList<>();
         }
-        return majorRepository.getDeleted(request.getLimit(), request.getOffset());
+        return MajorDTO.fromList(majorRepository.getDeleted(request.getLimit(), request.getOffset()));
     }
 
-    public Major getById(String majorId) {
-        return majorRepository.getReferenceById(majorId);
+    public MajorDTO getById(String majorId) {
+        return new MajorDTO(majorRepository.getReferenceById(majorId));
     }
 
     public Integer getAllTotal() {
@@ -69,7 +69,7 @@ public class MajorService {
         return majorRepository.getDeletedTotal();
     }
 
-    public List<Major> getByDepId(String depId) {
-        return majorRepository.getByDepId(depId);
+    public List<MajorDTO> getByDepId(String depId) {
+        return MajorDTO.fromList(majorRepository.getByDepId(depId));
     }
 }

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,42 +22,42 @@ public class PostController {
     private final PostService service;
 
     @PutMapping("/create")
-    public QnuResponseEntity<Post> create(@RequestBody CreatePostRequest request) {
-        return new QnuResponseEntity<>(service.create(request), HttpStatus.OK);
+    public QnuResponseEntity<PostDTO> create(CreatePostRequest request, HttpServletRequest servletRequest) throws IOException, NoAuthorityToDoActionException {
+        return new QnuResponseEntity<>(service.create(request, servletRequest), HttpStatus.OK);
     }
 
     @PostMapping("/approve")
-    public QnuResponseEntity<Post> approve(@RequestBody ApprovePostRequest request) throws ApprovalNoAuthorityException {
-        return new QnuResponseEntity<>(service.approve(request), HttpStatus.OK);
+    public QnuResponseEntity<PostDTO> approve(@RequestBody ApprovePostRequest request, HttpServletRequest servletRequest) throws ApprovalNoAuthorityException {
+        return new QnuResponseEntity<>(service.approve(request, servletRequest), HttpStatus.OK);
     }
 
     @PostMapping("/edit")
-    public QnuResponseEntity<Post> edit(@RequestBody EditPostRequest request) throws EditorNoAuthorityException {
-        return new QnuResponseEntity<>(service.edit(request),HttpStatus.OK);
+    public QnuResponseEntity<PostDTO> edit(EditPostRequest request, HttpServletRequest servletRequest) throws EditorNoAuthorityException, IOException {
+        return new QnuResponseEntity<>(service.edit(request, servletRequest),HttpStatus.OK);
     }
 
     @DeleteMapping("/delete")
-    public QnuResponseEntity<Post> delete(@RequestBody DeletePostRequest request) throws NoAuthorityToDoActionException {
+    public QnuResponseEntity<PostDTO> delete(@RequestBody DeletePostRequest request) throws NoAuthorityToDoActionException {
         return new QnuResponseEntity<>(service.delete(request),HttpStatus.OK);
     }
 
     @GetMapping("/get_all")
-    public QnuResponseEntity<List<Post>> getAll(@RequestBody FromToIndexRequest request) {
-        return new QnuResponseEntity<>(service.getAll(request), HttpStatus.OK);
+    public QnuResponseEntity<List<PostDTO>> getAll(@RequestBody FromToIndexRequest request, HttpServletRequest servletRequest) {
+        return new QnuResponseEntity<>(service.getAll(request, servletRequest), HttpStatus.OK);
     }
 
     @GetMapping("/get_in_org")
-    public QnuResponseEntity<List<Post>> getInOrg(@RequestBody GetInOrgRequest request) {
+    public QnuResponseEntity<List<PostDTO>> getInOrg(@RequestBody GetInOrgRequest request) {
         return new QnuResponseEntity<>(service.getInOrg(request), HttpStatus.OK);
     }
 
     @GetMapping("/get-not-approved-in-org")
-    public QnuResponseEntity<List<Post>> getNotApprovedInOrg(@RequestBody GetInOrgRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
+    public QnuResponseEntity<List<PostDTO>> getNotApprovedInOrg(@RequestBody GetInOrgRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
         return new QnuResponseEntity<>(service.getNotApprovedInOrg(request, servletRequest), HttpStatus.OK);
     }
 
     @GetMapping("/get_by_id")
-    public QnuResponseEntity<Post> getById(@RequestParam String postId, HttpServletRequest request) {
+    public QnuResponseEntity<PostDTO> getById(@RequestParam String postId, HttpServletRequest request) {
         return new QnuResponseEntity<>(service.getById(postId, request), HttpStatus.OK);
     }
 

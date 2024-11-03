@@ -45,7 +45,7 @@ public class Event {
     private String eventDescription;
 
     @Column(name = "PARTICIPANTS", nullable = false)
-    private int participants = 1;
+    private int participants = 0;
 
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -56,4 +56,7 @@ public class Event {
 
     @Column(name = "IS_APPROVED", nullable = false)
     private boolean isApproved = false;
+
+    @Column(name = "ORG_ID", nullable = false)
+    private String orgId;
 }

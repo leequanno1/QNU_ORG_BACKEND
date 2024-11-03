@@ -15,12 +15,12 @@ public class StudentInfoController {
     private final StudentInfoService service;
 
     @PutMapping("/update")
-    public QnuResponseEntity<StudentInfo> update(@RequestBody UpdateStudentInfoRequest request) {
+    public QnuResponseEntity<StudentInfoDTO> update(@RequestBody UpdateStudentInfoRequest request) {
         return new QnuResponseEntity<>(service.update(request), HttpStatus.OK);
     }
 
     @GetMapping("get-by-id")
-    public QnuResponseEntity<StudentInfo> getById(@RequestParam String studentKey) {
+    public QnuResponseEntity<StudentInfoDTO> getById(@RequestParam String studentKey) {
         return new QnuResponseEntity<>(service.getById(studentKey), HttpStatus.OK);
     }
 }

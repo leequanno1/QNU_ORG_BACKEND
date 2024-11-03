@@ -16,7 +16,7 @@ public class StaffInfoService {
         repository.save(info);
     }
 
-    public StaffInfo update(UpdateStaffInfoRequest request) {
+    public StaffInfoDTO update(UpdateStaffInfoRequest request) {
         StaffInfo staffInfo = repository.getReferenceById(request.getStaffKey());
         if(request.getDepId() != null && !request.getDepId().isBlank())
             staffInfo.setDepartment(depRepository.getReferenceById(request.getDepId()));
@@ -29,10 +29,10 @@ public class StaffInfoService {
         if(request.getIsTeacher() != null)
             staffInfo.setTeacher(request.getIsTeacher());
         repository.save(staffInfo);
-        return staffInfo;
+        return new StaffInfoDTO(staffInfo);
     }
 
-    public StaffInfo getById(String staffKey) {
-        return repository.getReferenceById(staffKey);
+    public StaffInfoDTO getById(String staffKey) {
+        return new StaffInfoDTO(repository.getReferenceById(staffKey));
     }
 }
