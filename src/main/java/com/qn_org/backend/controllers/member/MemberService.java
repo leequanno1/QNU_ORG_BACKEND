@@ -10,9 +10,7 @@ import com.qn_org.backend.services.exceptions.NoAuthorityToDoActionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -49,5 +47,16 @@ public class MemberService {
         member.setDelFlg(true);
         repository.save(member);
         return new MemberDTO(member);
+    }
+
+    public List<MemberInfo> getMemberInfo(MemberInfoRequest request) {
+        if(request.getMemberIds().isEmpty()) {
+            return new ArrayList<>();
+        }
+        return repository.getMemberInfo(request.getMemberIds());
+    }
+
+    public MemberInfo getMemberInfo(UserAndOrgIdRequest request) {
+        return repository.getMemberInfo(request.getOrgId(), request.getUserId());
     }
 }

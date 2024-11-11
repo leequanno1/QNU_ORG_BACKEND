@@ -27,12 +27,12 @@ public class ImageController {
 
     private final ImageService service;
 
-    @PutMapping("/get-images")
+    @PostMapping("/get-images")
     public QnuResponseEntity<List<Image>> getImages(@RequestBody GetImagesRequest request) {
         return new QnuResponseEntity<>(service.getImage(request), HttpStatus.OK);
     }
 
-    @PutMapping("/save-image")
+    @PutMapping("/save-images")
     public QnuResponseEntity<List<Image>> saveImages(SaveImagesRequest request) throws IOException {
         return new QnuResponseEntity<>(service.saveImages(request), HttpStatus.OK);
     }

@@ -1,6 +1,7 @@
 package com.qn_org.backend.config;
 
 import com.qn_org.backend.repositories.UserRepository;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,17 +18,31 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @RequiredArgsConstructor
-public class ApplicationConfig implements WebMvcConfigurer {
+public class ApplicationConfig {
 
     private final UserRepository repository;
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-                .allowedOrigins("http://localhost:4200")
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("*")
-                .allowCredentials(true);
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/api/**")
+//                .allowedOrigins("http://localhost:4200")
+//                .allowedMethods("GET", "POST", "PUT", "DELETE")
+//                .allowedHeaders("*")
+//                .allowCredentials(true);
+//    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(@NonNull CorsRegistry registry) {
+                registry.addMapping("/api/**") // Apply CORS settings to specific paths
+                        .allowedOrigins("http://localhost:4200") // Allow requests from Angular app
+                        .allowedMethods("GET", "POST", "PUT", "DELETE") // Allow only needed methods
+                        .allowedHeaders("Authorization", "Content-Type", "Accept") // Allow Authorization header
+                        .allowCredentials(true); // Allow credentials (if needed)
+            }
+        };
     }
 
     @Bean

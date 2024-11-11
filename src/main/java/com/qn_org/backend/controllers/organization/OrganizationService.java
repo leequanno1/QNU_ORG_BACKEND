@@ -3,7 +3,10 @@ package com.qn_org.backend.controllers.organization;
 import com.qn_org.backend.common_requests.FromToIndexRequest;
 import com.qn_org.backend.controllers.image.ImageService;
 import com.qn_org.backend.models.Organization;
+import com.qn_org.backend.models.User;
 import com.qn_org.backend.repositories.OrganizationRepository;
+import com.qn_org.backend.repositories.UserRepository;
+import com.qn_org.backend.services.JsonUtil;
 import com.qn_org.backend.services.QnuService;
 import com.qn_org.backend.services.exceptions.IdNotExistException;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ public class OrganizationService implements QnuService<Organization> {
 
     private final OrganizationRepository repository;
     private final ImageService imageService;
+    private final UserRepository userRepository;
 
     public Organization createOrganization(CreateOrganizationRequest request) throws IOException {
         String avtName = "";
@@ -29,8 +33,8 @@ public class OrganizationService implements QnuService<Organization> {
         backgroundName = imageService.handleSaveImage(request.getOrgBackGround(), generateImageName());
         Organization org = Organization.builder()
                 .orgId("ORG_" + UUID.randomUUID())
-                .orgAvatar(avtName)
-                .orgBackground(backgroundName)
+                .orgAvatar("/api/image"+avtName)
+                .orgBackground("/api/image"+backgroundName)
                 .orgName(request.getOrgName())
                 .orgDescription(request.getOrgDescription())
                 .members(0)
@@ -65,10 +69,10 @@ public class OrganizationService implements QnuService<Organization> {
         try {
             Organization org = repository.getReferenceById(request.getOrgId());
             if(request.getOrgAvatar() != null && !request.getOrgAvatar().isEmpty()) {
-                org.setOrgAvatar(imageService.handleSaveImage(request.getOrgAvatar(),generateImageName()));
+                org.setOrgAvatar("/api/image/"+imageService.handleSaveImage(request.getOrgAvatar(),generateImageName()));
             }
             if(request.getOrgBackGround() != null && !request.getOrgBackGround().isEmpty()) {
-                org.setOrgBackground(imageService.handleSaveImage(request.getOrgBackGround(),generateImageName()));
+                org.setOrgBackground("/api/image/"+imageService.handleSaveImage(request.getOrgBackGround(),generateImageName()));
             }
             if(request.getOrgName() != null && !request.getOrgName().isEmpty()) org.setOrgName(request.getOrgName());
             if(request.getOrgDescription() != null && !request.getOrgDescription().isEmpty()) org.setOrgDescription(request.getOrgDescription());
@@ -113,5 +117,11 @@ public class OrganizationService implements QnuService<Organization> {
 
     public Integer getDeletedTotal() {
         return repository.getDeletedTotal();
+    }
+
+    public List<Organization> getByUserId(String userId) {
+        User user = userRepository.getReferenceById(userId);
+        var ids = JsonUtil.jsonStringToList(user.getOrgIds());
+        return ids.isEmpty() ? new ArrayList<>(): repository.getByUserID(ids);
     }
 }

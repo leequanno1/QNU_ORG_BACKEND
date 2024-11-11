@@ -41,17 +41,17 @@ public class PostController {
         return new QnuResponseEntity<>(service.delete(request),HttpStatus.OK);
     }
 
-    @GetMapping("/get_all")
+    @PostMapping("/get_all")
     public QnuResponseEntity<List<PostDTO>> getAll(@RequestBody FromToIndexRequest request, HttpServletRequest servletRequest) {
         return new QnuResponseEntity<>(service.getAll(request, servletRequest), HttpStatus.OK);
     }
 
-    @GetMapping("/get_in_org")
+    @PostMapping("/get_in_org")
     public QnuResponseEntity<List<PostDTO>> getInOrg(@RequestBody GetInOrgRequest request) {
         return new QnuResponseEntity<>(service.getInOrg(request), HttpStatus.OK);
     }
 
-    @GetMapping("/get-not-approved-in-org")
+    @PostMapping("/get_not_approved_in_org")
     public QnuResponseEntity<List<PostDTO>> getNotApprovedInOrg(@RequestBody GetInOrgRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
         return new QnuResponseEntity<>(service.getNotApprovedInOrg(request, servletRequest), HttpStatus.OK);
     }

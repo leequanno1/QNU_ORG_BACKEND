@@ -1,6 +1,5 @@
 package com.qn_org.backend.controllers.student;
 
-import com.qn_org.backend.models.StudentInfo;
 import com.qn_org.backend.responses.QnuResponseEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

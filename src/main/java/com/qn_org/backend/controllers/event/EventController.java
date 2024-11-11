@@ -23,8 +23,8 @@ public class EventController {
     private final EventService service;
 
     @PutMapping("/create")
-    public QnuResponseEntity<EventDTO> create(CreateEventRequest request) throws IOException {
-        return new QnuResponseEntity<>(service.create(request), HttpStatus.OK);
+    public QnuResponseEntity<EventDTO> create(CreateEventRequest request, HttpServletRequest servletRequest) throws IOException, NoAuthorityToDoActionException {
+        return new QnuResponseEntity<>(service.create(request, servletRequest), HttpStatus.OK);
     }
 
     @PostMapping("/approve")
@@ -42,17 +42,17 @@ public class EventController {
         return new QnuResponseEntity<>(service.delete(request), HttpStatus.OK);
     }
 
-    @GetMapping("/get_all")
+    @PostMapping("/get_all")
     public QnuResponseEntity<List<EventDTO>> getAll(@RequestBody FromToIndexRequest request, HttpServletRequest servletRequest) {
         return new QnuResponseEntity<>(service.getAll(request, servletRequest), HttpStatus.OK);
     }
 
-    @GetMapping("/get_in_org")
+    @PostMapping("/get_in_org")
     public QnuResponseEntity<List<EventDTO>> getInOrg(@RequestBody GetInOrgRequest request, HttpServletRequest servletRequest) {
         return new QnuResponseEntity<>(service.getInOrg(request, servletRequest), HttpStatus.OK);
     }
 
-    @GetMapping("/get-not-approved-in-org")
+    @PostMapping("/get_not_approved_in_org")
     public QnuResponseEntity<List<EventDTO>> getNotApprovedInOrg(@RequestBody GetInOrgRequest request, HttpServletRequest servletRequest) {
         return new QnuResponseEntity<>(service.getNotApprovedInOrg(request, servletRequest), HttpStatus.OK);
     }

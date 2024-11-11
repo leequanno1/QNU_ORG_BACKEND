@@ -7,6 +7,7 @@ import com.qn_org.backend.controllers.image.SaveImagesRequest;
 import com.qn_org.backend.controllers.post.GetInOrgRequest;
 import com.qn_org.backend.models.Event;
 import com.qn_org.backend.models.Member;
+import com.qn_org.backend.models.Organization;
 import com.qn_org.backend.models.User;
 import com.qn_org.backend.models.enums.MemberRole;
 import com.qn_org.backend.repositories.EventRepository;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,14 +35,25 @@ public class EventService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
-    public EventDTO create(CreateEventRequest request) throws IOException {
+    public EventDTO create(CreateEventRequest request, HttpServletRequest servletRequest) throws IOException, NoAuthorityToDoActionException {
+        String userId = jwtService.extractUserId(servletRequest);
+        Member member = memberRepository.getReferenceById(request.getHosterId());
+        if(!member.getUserId().equals(userId)) {
+            throw new NoAuthorityToDoActionException();
+        }
+        Organization org = member.getOrganization();
+        org.setEvents(org.getEvents()+1);
+        boolean isApproved = member.getRoleLevel() == MemberRole.ADMIN.getValue();
         Event event = Event.builder()
                 .eventId("EVN_" + UUID.randomUUID())
                 .begin(request.getBegin())
                 .end(request.getEnd())
-                .hoster(memberRepository.getReferenceById(request.getHosterId()))
+                .hoster(member)
                 .eventName(request.getEventName())
                 .eventDescription(request.getEventDescription())
+                .insDate(new Date())
+                .isApproved(isApproved)
+                .orgId(org.getOrgId())
                 .build();
         repository.save(event);
         var images = imageService.saveImages(new SaveImagesRequest(event.getEventId(),request.getImages()));

@@ -9,12 +9,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post,String> {
-    @Query(value = "SELECT * FROM Post WHERE DEL_FLG = 0 AND IS_APPROVED = 1 AND ORG_ID IN (:orgIdList) ORDER BY INS_DATE LIMIT :limit OFFSET :offset", nativeQuery = true)
+    @Query(value = "SELECT * FROM Post WHERE DEL_FLG = 0 AND IS_APPROVED = 1 AND ORG_ID IN (:orgIdList) ORDER BY INS_DATE DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
     List<Post> getAll(@Param("orgIdList") List<String> orgIdList, @Param("limit") int limit, @Param("offset") int offset);
 
-    @Query(value = "SELECT * FROM Post WHERE DEL_FLG = 0 AND ORG_ID = :orgId AND IS_APPROVED = 1 ORDER BY INS_DATE LIMIT :limit OFFSET :offset", nativeQuery = true)
+    @Query(value = "SELECT * FROM Post WHERE DEL_FLG = 0 AND ORG_ID = :orgId AND IS_APPROVED = 1 ORDER BY INS_DATE DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
     List<Post> getInOrg(@Param("orgId") String orgId, @Param("limit") int limit, @Param("offset") int offset);
 
-    @Query(value = "SELECT * FROM Post WHERE DEL_FLG = 0 AND ORG_ID = :orgId AND IS_APPROVED = 0 ORDER BY INS_DATE LIMIT :limit OFFSET :offset", nativeQuery = true)
+    @Query(value = "SELECT * FROM Post WHERE DEL_FLG = 0 AND ORG_ID = :orgId AND IS_APPROVED = 0 ORDER BY INS_DATE DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
     List<Post> getNotApprovedInOrg(@Param("orgId") String orgId, @Param("limit") int limit, @Param("offset") int offset);
 }

@@ -19,4 +19,7 @@ public interface OrganizationRepository extends JpaRepository<Organization,Strin
 
     @Query(value = "SELECT COUNT(ORG_ID) AS total FROM Organization WHERE DEL_FLG = 1", nativeQuery = true)
     Integer getDeletedTotal();
+
+    @Query(value = "SELECT * FROM Organization WHERE ORG_ID IN (:orgIds) AND DEL_FLG = 0", nativeQuery = true)
+    List<Organization> getByUserID(@Param("orgIds") List<String> orgIds);
 }

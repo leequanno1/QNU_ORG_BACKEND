@@ -42,6 +42,7 @@ public class PostDTO {
         delFlg = post.isDelFlg();
         isApproved = post.isApproved();
         this.images = images;
+        orgId = post.getOrgId();
     }
 
     public PostDTO(Post post) {
@@ -53,6 +54,7 @@ public class PostDTO {
         insDate = post.getInsDate();
         delFlg = post.isDelFlg();
         isApproved = post.isApproved();
+        orgId = post.getOrgId();
     }
 
     public static List<PostDTO> formPosts(List<Post> posts) {
