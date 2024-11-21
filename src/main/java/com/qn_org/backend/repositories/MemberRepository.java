@@ -1,5 +1,6 @@
 package com.qn_org.backend.repositories;
 
+import com.qn_org.backend.controllers.member.ManageMember;
 import com.qn_org.backend.controllers.member.MemberInfo;
 import com.qn_org.backend.models.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,7 +21,7 @@ public interface MemberRepository extends JpaRepository<Member,String> {
 
     @Query("""
         SELECT new com.qn_org.backend.controllers.member.MemberInfo(
-            m.memberId, u.userId, u.emailAddress, u.displayName, u.userAvatar, u.userType)
+            m.memberId, u.userId, u.emailAddress, u.displayName, u.userAvatar, u.userType,  m.roleLevel)
         FROM Member m
         JOIN User u
         ON m.userId = u.userId
@@ -30,11 +31,49 @@ public interface MemberRepository extends JpaRepository<Member,String> {
 
     @Query("""
         SELECT new com.qn_org.backend.controllers.member.MemberInfo(
-            m.memberId, u.userId, u.emailAddress, u.displayName, u.userAvatar, u.userType)
+            m.memberId, u.userId, u.emailAddress, u.displayName, u.userAvatar, u.userType,  m.roleLevel)
+        FROM Member m
+        JOIN User u
+        ON m.userId = u.userId
+        WHERE m.organization.orgId = :orgId
+    """)
+    List<MemberInfo> getMemberInfoByOrgId(@Param("orgId") String orgId);
+
+    @Query("""
+        SELECT new com.qn_org.backend.controllers.member.MemberInfo(
+            m.memberId, u.userId, u.emailAddress, u.displayName, u.userAvatar, u.userType, m.roleLevel)
         FROM Member m
         JOIN User u
         ON m.userId = u.userId
         WHERE m.userId = :userId AND m.organization.orgId = :orgId
     """)
-    MemberInfo getMemberInfo(@Param("orgId") String orgId,@Param("userId") String userId);
+    List<MemberInfo> getMemberInfo(@Param("orgId") String orgId,@Param("userId") String userId);
+
+    @Query("""
+        SELECT new com.qn_org.backend.controllers.member.ManageMember(
+                                       m.memberId,
+                                       m.organization.orgId,
+                                       m.userId,
+                                       u.displayName,
+                                       m.roleId,
+                                       m.roleLevel,
+                                       m.insDate,
+                                       m.delFlg,
+                                       u.userInfoKey,
+                                       d.departmentId,
+                                       d.depName
+                                   )
+                                   FROM Member m
+                                   JOIN User u ON m.userId = u.userId
+                                   LEFT JOIN StudentInfo st ON (u.userInfoKey LIKE 'STU%' AND m.userId = st.studentKey)
+                                   LEFT JOIN Major mj ON st.major.majorId = mj.majorId
+                                   LEFT JOIN Department d ON mj.department.departmentId = d.departmentId
+                                   LEFT JOIN StaffInfo sf ON (u.userInfoKey LIKE 'TEA%' OR u.userInfoKey LIKE 'STA%' AND m.userId = sf.staffKey)
+                                   LEFT JOIN Department d2 ON sf.department.departmentId = d2.departmentId
+                                   WHERE m.organization.orgId = :orgId AND m.delFlg = false
+                                   ORDER BY m.insDate DESC
+    """)
+    List<ManageMember> getManagedMember(@Param("orgId") String orgId);
+
+    Member findByUserId(String userId);
 }

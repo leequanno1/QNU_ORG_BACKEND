@@ -12,4 +12,5 @@ public class MemberInfo {
     private String displayName;
     private String userAvatar;
     private int userType;
+    private int roleLevel;
 }

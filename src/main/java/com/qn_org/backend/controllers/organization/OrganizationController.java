@@ -6,6 +6,7 @@ import com.qn_org.backend.responses.QnuResponseEntity;
 import com.qn_org.backend.services.exceptions.IdNotExistException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -19,8 +20,8 @@ public class OrganizationController {
 
     private final OrganizationService service;
 
-    @PutMapping("/create")
-    public QnuResponseEntity<Organization> createOrg(CreateOrganizationRequest request) throws IOException {
+    @PutMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public QnuResponseEntity<Organization> createOrg(@ModelAttribute CreateOrganizationRequest request) throws IOException {
         return new QnuResponseEntity<>(service.createOrganization(request),HttpStatus.OK);
     }
 
@@ -39,8 +40,8 @@ public class OrganizationController {
         return new QnuResponseEntity<>(service.getById(orgId), HttpStatus.OK);
     }
 
-    @PutMapping("/update")
-    public QnuResponseEntity<Organization> updateOrg(UpdateOrganizationRequest request) throws IdNotExistException, IOException {
+    @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public QnuResponseEntity<Organization> updateOrg(@ModelAttribute UpdateOrganizationRequest request) throws IdNotExistException, IOException {
         return new QnuResponseEntity<>(service.updateOrganization(request), HttpStatus.OK);
     }
 

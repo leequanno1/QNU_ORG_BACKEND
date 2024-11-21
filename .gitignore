@@ -34,3 +34,4 @@ build/
 
 ### Image ###
 /src/public/images/*
+/src/main/resources/application.properties

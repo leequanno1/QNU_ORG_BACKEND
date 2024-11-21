@@ -84,4 +84,9 @@ public class ImageService {
     public void deleteImage(List<String> delImagesId) {
         repository.deleteAllById(delImagesId);
     }
+
+    public static String generateUniqueImageName(){
+        long time = new Date().getTime();
+        return "IMG_" + time + UUID.randomUUID();
+    }
 }

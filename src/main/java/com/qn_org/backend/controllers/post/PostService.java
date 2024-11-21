@@ -41,7 +41,7 @@ public class PostService {
         }
         Organization org = member.getOrganization();
         org.setPosts(org.getPosts()+1);
-        boolean isApproved = member.getRoleLevel() == MemberRole.ADMIN.getValue();
+        boolean isApproved = member.getRoleLevel() == 2;
         Post post = Post.builder()
                 .postId("POS_" + UUID.randomUUID())
                 .poster(member)
@@ -63,7 +63,7 @@ public class PostService {
         String userId = jwtService.extractUserId(servletRequest);
         Member member = memberRepository.getReferenceById(request.getApprovalId());
         if(!(
-                member.getRoleLevel() == MemberRole.ADMIN.getValue() &&
+                member.getRoleLevel() == 2 &&
                 member.getOrganization().getOrgId().equals(post.getOrgId()) &&
                 member.getUserId().equals(userId)
         ))
@@ -96,7 +96,7 @@ public class PostService {
         User user = userRepository.getReferenceById(member.getUserId());
         if(user.isSuperAdmin())
             isDeleted = true;
-        if(member.getMemberId().equals(request.getPosterId()))
+        if(member.getMemberId().equals(request.getPosterId()) || member.getRoleLevel() == 2)
             isDeleted = true;
         if(isDeleted) {
             post.setDelFlg(true);

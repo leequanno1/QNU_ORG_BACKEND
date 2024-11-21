@@ -9,6 +9,7 @@ import com.qn_org.backend.repositories.UserRepository;
 import com.qn_org.backend.services.JsonUtil;
 import com.qn_org.backend.services.QnuService;
 import com.qn_org.backend.services.exceptions.IdNotExistException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,19 +28,21 @@ public class OrganizationService implements QnuService<Organization> {
     private final UserRepository userRepository;
 
     public Organization createOrganization(CreateOrganizationRequest request) throws IOException {
-        String avtName = "";
-        String backgroundName = "";
-        avtName = imageService.handleSaveImage(request.getOrgAvatar(), generateImageName());
-        backgroundName = imageService.handleSaveImage(request.getOrgBackGround(), generateImageName());
         Organization org = Organization.builder()
                 .orgId("ORG_" + UUID.randomUUID())
-                .orgAvatar("/api/image"+avtName)
-                .orgBackground("/api/image"+backgroundName)
                 .orgName(request.getOrgName())
                 .orgDescription(request.getOrgDescription())
                 .members(0)
                 .insDate(new Date())
                 .build();
+        if(request.getOrgAvatar() != null) {
+            String avtName = imageService.handleSaveImage(request.getOrgAvatar(), generateImageName());
+            org.setOrgAvatar("/api/image"+avtName);
+        }
+        if(request.getOrgBackGround() != null) {
+            String backgroundName = imageService.handleSaveImage(request.getOrgBackGround(), generateImageName());
+            org.setOrgBackground("/api/image"+backgroundName);
+        }
         handleSaveRepository(org);
         return org;
     }
@@ -81,6 +84,7 @@ public class OrganizationService implements QnuService<Organization> {
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new IdNotExistException();
         }
     }
@@ -96,6 +100,7 @@ public class OrganizationService implements QnuService<Organization> {
         }
     }
 
+    @Transactional
     public Organization getById(String orgId) throws IdNotExistException {
         try {
             return repository.getReferenceById(orgId);

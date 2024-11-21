@@ -2,7 +2,6 @@ package com.qn_org.backend.controllers.event;
 
 import com.qn_org.backend.common_requests.FromToIndexRequest;
 import com.qn_org.backend.controllers.post.GetInOrgRequest;
-import com.qn_org.backend.models.Event;
 import com.qn_org.backend.responses.QnuResponseEntity;
 import com.qn_org.backend.services.exceptions.ApprovalNoAuthorityException;
 import com.qn_org.backend.services.exceptions.EditorNoAuthorityException;
@@ -10,6 +9,7 @@ import com.qn_org.backend.services.exceptions.NoAuthorityToDoActionException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -22,8 +22,8 @@ import java.util.List;
 public class EventController {
     private final EventService service;
 
-    @PutMapping("/create")
-    public QnuResponseEntity<EventDTO> create(CreateEventRequest request, HttpServletRequest servletRequest) throws IOException, NoAuthorityToDoActionException {
+    @PostMapping(value ="/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public QnuResponseEntity<EventDTO> create(@ModelAttribute CreateEventRequest request, HttpServletRequest servletRequest) throws IOException, NoAuthorityToDoActionException {
         return new QnuResponseEntity<>(service.create(request, servletRequest), HttpStatus.OK);
     }
 
@@ -60,5 +60,10 @@ public class EventController {
     @GetMapping("/get_by_id")
     public QnuResponseEntity<EventDTO> getById(@RequestParam String eventId, HttpServletRequest servletRequest) {
         return new QnuResponseEntity<>(service.getById(eventId, servletRequest), HttpStatus.OK);
+    }
+
+    @ExceptionHandler(ApprovalNoAuthorityException.class)
+    public QnuResponseEntity<String> handleApprovalNoAuthorityException() {
+        return new QnuResponseEntity<>("User have no authority to do this action", HttpStatus.NON_AUTHORITATIVE_INFORMATION);
     }
 }

@@ -9,6 +9,7 @@ import com.qn_org.backend.services.exceptions.NoAuthorityToDoActionException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -21,8 +22,8 @@ import java.util.List;
 public class PostController {
     private final PostService service;
 
-    @PutMapping("/create")
-    public QnuResponseEntity<PostDTO> create(CreatePostRequest request, HttpServletRequest servletRequest) throws IOException, NoAuthorityToDoActionException {
+    @PutMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public QnuResponseEntity<PostDTO> create(@ModelAttribute CreatePostRequest request, HttpServletRequest servletRequest) throws IOException, NoAuthorityToDoActionException {
         return new QnuResponseEntity<>(service.create(request, servletRequest), HttpStatus.OK);
     }
 
@@ -31,8 +32,8 @@ public class PostController {
         return new QnuResponseEntity<>(service.approve(request, servletRequest), HttpStatus.OK);
     }
 
-    @PostMapping("/edit")
-    public QnuResponseEntity<PostDTO> edit(EditPostRequest request, HttpServletRequest servletRequest) throws EditorNoAuthorityException, IOException {
+    @PostMapping(value = "/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public QnuResponseEntity<PostDTO> edit(@ModelAttribute EditPostRequest request, HttpServletRequest servletRequest) throws EditorNoAuthorityException, IOException {
         return new QnuResponseEntity<>(service.edit(request, servletRequest),HttpStatus.OK);
     }
 

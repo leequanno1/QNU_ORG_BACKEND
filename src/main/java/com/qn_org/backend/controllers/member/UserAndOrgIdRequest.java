@@ -7,8 +7,6 @@ import lombok.Data;
 @Data
 @Builder
 public class UserAndOrgIdRequest {
-    @NotNull
     private String userId;
-    @NotNull
     private String orgId;
 }

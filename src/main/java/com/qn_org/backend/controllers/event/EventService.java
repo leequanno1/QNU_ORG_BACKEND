@@ -43,7 +43,7 @@ public class EventService {
         }
         Organization org = member.getOrganization();
         org.setEvents(org.getEvents()+1);
-        boolean isApproved = member.getRoleLevel() == MemberRole.ADMIN.getValue();
+        boolean isApproved = member.getRoleLevel() == 2;
         Event event = Event.builder()
                 .eventId("EVN_" + UUID.randomUUID())
                 .begin(request.getBegin())
@@ -65,7 +65,7 @@ public class EventService {
         String userId = jwtService.extractUserId(servletRequest);
         Member member = memberRepository.getReferenceById(request.getApprovalId());
         if(!(
-                member.getRoleLevel() == MemberRole.ADMIN.getValue() &&
+                member.getRoleLevel() == 2 &&
                         member.getOrganization().getOrgId().equals(event.getOrgId()) &&
                         member.getUserId().equals(userId)
         ))
@@ -92,11 +92,11 @@ public class EventService {
     public EventDTO delete(DeleteEventRequest request) throws NoAuthorityToDoActionException {
         Event event = repository.getReferenceById(request.getEventId());
         boolean isDeleted = false;
-        Member member = memberRepository.getReferenceById(request.getEventId());
+        Member member = memberRepository.getReferenceById(request.getHosterId());
         User user = userRepository.getReferenceById(member.getUserId());
         if(user.isSuperAdmin())
             isDeleted = true;
-        if(member.getMemberId().equals(request.getEventId()))
+        if(member.getMemberId().equals(request.getEventId()) || member.getRoleLevel() == 2)
             isDeleted = true;
         if(isDeleted) {
             event.setDelFlg(true);
