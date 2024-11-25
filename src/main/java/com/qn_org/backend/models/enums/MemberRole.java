@@ -20,4 +20,8 @@ public enum MemberRole {
         }
         return UNDEFINED;
     }
+
+    public static boolean isAdmin(int roleLevel) {
+        return roleLevel == 2;
+    }
 }

@@ -2,6 +2,7 @@ package com.qn_org.backend.controllers.event;
 
 import com.qn_org.backend.common_requests.FromToIndexRequest;
 import com.qn_org.backend.config.JwtService;
+import com.qn_org.backend.controllers.image.GetImagesRequest;
 import com.qn_org.backend.controllers.image.ImageService;
 import com.qn_org.backend.controllers.image.SaveImagesRequest;
 import com.qn_org.backend.controllers.post.GetInOrgRequest;
@@ -18,6 +19,8 @@ import com.qn_org.backend.services.exceptions.EditorNoAuthorityException;
 import com.qn_org.backend.services.exceptions.NoAuthorityToDoActionException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -43,7 +46,6 @@ public class EventService {
         }
         Organization org = member.getOrganization();
         org.setEvents(org.getEvents()+1);
-        boolean isApproved = member.getRoleLevel() == 2;
         Event event = Event.builder()
                 .eventId("EVN_" + UUID.randomUUID())
                 .begin(request.getBegin())
@@ -52,11 +54,11 @@ public class EventService {
                 .eventName(request.getEventName())
                 .eventDescription(request.getEventDescription())
                 .insDate(new Date())
-                .isApproved(isApproved)
+                .isApproved(MemberRole.isAdmin(member.getRoleLevel()))
                 .orgId(org.getOrgId())
                 .build();
         repository.save(event);
-        var images = imageService.saveImages(new SaveImagesRequest(event.getEventId(),request.getImages()));
+        var images = imageService.saveImages(new SaveImagesRequest(event.getEventId(),request.getImages() == null ? new ArrayList<>() : request.getImages()));
         return new EventDTO(event, images);
     }
 
@@ -65,7 +67,7 @@ public class EventService {
         String userId = jwtService.extractUserId(servletRequest);
         Member member = memberRepository.getReferenceById(request.getApprovalId());
         if(!(
-                member.getRoleLevel() == 2 &&
+                MemberRole.isAdmin(member.getRoleLevel()) &&
                         member.getOrganization().getOrgId().equals(event.getOrgId()) &&
                         member.getUserId().equals(userId)
         ))
@@ -78,14 +80,21 @@ public class EventService {
 
     public EventDTO edit(EditEventRequest request) throws EditorNoAuthorityException, IOException {
         Event event = repository.getReferenceById(request.getEventId());
-        if(!event.getHoster().getMemberId().equals(request.getEventId())) {
+        if(!event.getHoster().getMemberId().equals(request.getHosterId())) {
             throw new EditorNoAuthorityException();
         }
         event.setEventName(request.getEventName());
         event.setEventDescription(request.getEventDescription());
         repository.save(event);
-        imageService.deleteImage(request.getDelImagesId());
-        var images = imageService.saveImages(new SaveImagesRequest(event.getEventId(), request.getNewImage()));
+        if(request.getDelImagesId() != null && !request.getDelImagesId().isEmpty()) {
+            imageService.deleteImage(request.getDelImagesId());
+        }
+        if(request.getNewImage() != null && !request.getNewImage().isEmpty()) {
+            imageService.saveImages(new SaveImagesRequest(event.getEventId(), request.getNewImage()));
+        }
+        List<String> parentId = new ArrayList<>();
+        parentId.add(event.getEventId());
+        var images = imageService.getImage(GetImagesRequest.builder().parentIds(parentId).build());
         return new EventDTO(event, images);
     }
 
@@ -96,7 +105,7 @@ public class EventService {
         User user = userRepository.getReferenceById(member.getUserId());
         if(user.isSuperAdmin())
             isDeleted = true;
-        if(member.getMemberId().equals(request.getEventId()) || member.getRoleLevel() == 2)
+        if(member.getMemberId().equals(request.getEventId()) || MemberRole.isAdmin(member.getRoleLevel()))
             isDeleted = true;
         if(isDeleted) {
             event.setDelFlg(true);
@@ -113,7 +122,8 @@ public class EventService {
         List<String> orgIdList = User.jsonStringToList(orgIds);
         if(!request.isValid())
             return new ArrayList<>();
-        return EventDTO.fromList(repository.getAll(orgIdList, request.getLimit(), request.getOffset()));
+//        return repository.getAll(orgIdList);
+        return repository.getAll(orgIdList, PageRequest.of(request.getPage(), request.getSize()));
     }
 
     public List<EventDTO> getInOrg(GetInOrgRequest request, HttpServletRequest servletRequest) {
@@ -121,7 +131,7 @@ public class EventService {
         String orgIds = userRepository.getReferenceById(userId).getOrgIds();
         List<String> orgIdList = User.jsonStringToList(orgIds);
         if(orgIdList.contains(request.getOrgId())) {
-            return EventDTO.fromList(repository.getInOrg(request.getOrgId(), request.getOffset().getLimit(), request.getOffset().getOffset()));
+            return repository.getInOrg(request.getOrgId(), PageRequest.of(request.getOffset().getPage(), request.getOffset().getSize()));
         }
         return new ArrayList<>();
     }
