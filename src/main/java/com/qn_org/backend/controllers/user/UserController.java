@@ -33,6 +33,11 @@ public class UserController {
         return new QnuResponseEntity<>(userService.getStudentUserInfo(request), HttpStatus.OK);
     }
 
+    @PostMapping("/get_sta_user_info")
+    public QnuResponseEntity<StaffUserInfoResponse> getStaffUserInfo(@RequestBody UserIdRequest request) {
+        return new QnuResponseEntity<>(userService.getStaffUserInfo(request), HttpStatus.OK);
+    }
+
     @PostMapping(value = "/update_user-info", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public QnuResponseEntity<UserInfoResponse> updateUserInfo(@ModelAttribute UpdateUserInfoRequest request, HttpServletRequest servletRequest) throws IOException {
         return new QnuResponseEntity<>(userService.updateUserInfo(request, servletRequest), HttpStatus.OK);

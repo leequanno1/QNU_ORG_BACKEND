@@ -5,14 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class AddMemberToOrgRequest {
+public class PreviewMember {
+    private String userId;
+    private String fullName;
+    private String depName;
     private String orgId;
-
-    private List<String> userIds;
+    private int userType;
 }

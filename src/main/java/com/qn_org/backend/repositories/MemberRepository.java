@@ -2,6 +2,7 @@ package com.qn_org.backend.repositories;
 
 import com.qn_org.backend.controllers.member.ManageMember;
 import com.qn_org.backend.controllers.member.MemberInfo;
+import com.qn_org.backend.controllers.member.PreviewMember;
 import com.qn_org.backend.models.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -75,5 +76,34 @@ public interface MemberRepository extends JpaRepository<Member,String> {
     """)
     List<ManageMember> getManagedMember(@Param("orgId") String orgId);
 
-    Member findByUserId(String userId);
+    @Query("""
+        SELECT m FROM Member m
+        WHERE m.userId = :userId AND m.organization.orgId = :orgId
+    """)
+    Member findByUserIdAndOrgId(@Param("userId") String userId, @Param("orgId") String orgId);
+
+    @Query("""
+        SELECT new com.qn_org.backend.controllers.member.PreviewMember(
+                                       u.userId,
+                                       st.fullName,
+                                       d.depName,
+                                       u.orgIds,
+                                       u.userType
+                                   )
+                                   FROM User u
+                                   LEFT JOIN StudentInfo st ON (u.userInfoKey LIKE 'STU%' AND u.userId = st.studentKey)
+                                   LEFT JOIN Major mj ON st.major.majorId = mj.majorId
+                                   LEFT JOIN Department d ON mj.department.departmentId = d.departmentId
+                                   LEFT JOIN StaffInfo sf ON (u.userInfoKey LIKE 'TEA%' OR u.userInfoKey LIKE 'STA%' AND u.userId = sf.staffKey)
+                                   LEFT JOIN Department d2 ON sf.department.departmentId = d2.departmentId
+                                   WHERE u.userId IN :userIds AND u.delFlg = false
+                                   ORDER BY u.insDate DESC
+    """)
+    List<PreviewMember> getPreviewMember(@Param("userIds") List<String> userIds);
+
+    @Query("""
+        SELECT m.userId FROM Member m
+        WHERE m.userId IN :userIds and m.organization.orgId = :orgId
+    """)
+    List<String> getExitedUserId(@Param("userIds") List<String> userIds, @Param("orgId") String orgId);
 }

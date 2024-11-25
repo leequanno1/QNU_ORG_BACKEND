@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -18,9 +17,9 @@ import java.util.List;
 public class MemberController {
     private final MemberService service;
 
-    @PutMapping("/add")
-    public QnuResponseEntity<MemberDTO> add(@RequestBody AddMemberToOrgRequest request) throws NoAuthorityToDoActionException {
-        return new QnuResponseEntity<>(service.add(request), HttpStatus.OK);
+    @PostMapping("/add")
+    public QnuResponseEntity<List<MemberDTO>> add(@RequestBody AddMemberToOrgRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
+        return new QnuResponseEntity<>(service.add(request, servletRequest), HttpStatus.OK);
     }
 
     @PostMapping("/remove")
@@ -41,6 +40,11 @@ public class MemberController {
     @GetMapping("/get-manage-member")
     public QnuResponseEntity<List<ManageMember>> getManageMembers(@RequestParam String orgId) {
         return new QnuResponseEntity<>(service.getManagedMembers(orgId), HttpStatus.OK);
+    }
+
+    @PostMapping("/get_preview_member")
+    public QnuResponseEntity<List<PreviewMember>> getPreviewMember(@RequestBody GetReviewMemberRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
+        return new QnuResponseEntity<>(service.getPreviewMember(request, servletRequest), HttpStatus.OK);
     }
 
     @PostMapping("/change_member_role")
