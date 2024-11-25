@@ -1,6 +1,5 @@
 package com.qn_org.backend.repositories;
 
-import com.qn_org.backend.controllers.user.StaffUserInfoResponse;
 import com.qn_org.backend.controllers.user.StudentUserInfoResponse;
 import com.qn_org.backend.controllers.user.UserInfoResponse;
 import com.qn_org.backend.models.User;
@@ -22,12 +21,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     List<UserInfoResponse> getUserInfos(@Param("userIds") List<String> userIds);
 
     @Query("""
-        SELECT u FROM User u
-        WHERE u.userId IN :userIds
-    """)
-    List<User> findUsersByUserIds(@Param("userIds") List<String> userIds);
-
-    @Query("""
                 SELECT new com.qn_org.backend.controllers.user.StudentUserInfoResponse(u.userId, u.displayName, st.fullName, u.userAvatar, u.userBackground,st.major.majorId, mj.majorName, dep.departmentId, dep.depName, st.phoneNumber)
                 FROM User u
                 LEFT JOIN StudentInfo st ON u.userId = st.studentKey
@@ -36,13 +29,4 @@ public interface UserRepository extends JpaRepository<User, String> {
                 WHERE u.userId = :userId
             """)
     StudentUserInfoResponse getStudentUserInfo(@Param("userId") String userId);
-
-    @Query("""
-                SELECT new com.qn_org.backend.controllers.user.StaffUserInfoResponse(u.userId, u.displayName, st.fullName, u.userAvatar, u.userBackground, dep.departmentId, dep.depName, st.phoneNumber)
-                FROM User u
-                LEFT JOIN StaffInfo st ON u.userId = st.staffKey
-                LEFT JOIN Department dep ON st.department.departmentId = dep.departmentId
-                WHERE u.userId = :userId
-            """)
-    StaffUserInfoResponse getStaffUserInfo(@Param("userId") String userId);
 }

@@ -1,5 +1,7 @@
 package com.qn_org.backend.controllers.member;
 
+import com.qn_org.backend.models.enums.MemberRole;
+import com.qn_org.backend.services.JsonUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,5 +16,11 @@ import java.util.List;
 public class AddMemberToOrgRequest {
     private String orgId;
 
-    private List<String> userIds;
+    private String userId;
+
+    private String roleId;
+
+    public int getRoleLevel() {
+        return JsonUtil.getRoleLevel(roleId);
+    }
 }

@@ -46,10 +46,6 @@ public class UserService {
         return repository.getStudentUserInfo(request.getUserId());
     }
 
-    public StaffUserInfoResponse getStaffUserInfo(UserIdRequest request) {
-        return repository.getStaffUserInfo(request.getUserId());
-    }
-
     public UserInfoResponse updateUserInfo(UpdateUserInfoRequest request, HttpServletRequest servletRequest) throws IOException {
         String userId = jwtService.extractUserId(servletRequest);
         if (userId != null) {
@@ -94,6 +90,4 @@ public class UserService {
         var time = new Date().getTime() - validationCode.getInsDate().getTime();
         return time > 300000;
     }
-
-
 }

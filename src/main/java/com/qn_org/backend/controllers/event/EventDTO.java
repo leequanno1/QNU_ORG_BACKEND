@@ -36,10 +36,6 @@ public class EventDTO {
 
     private List<Image> images;
 
-    private String userId;
-
-    private boolean isJoin;
-
     public EventDTO(Event event) {
         this.eventId = event.getEventId();
         this.begin = event.getBegin();
@@ -67,22 +63,6 @@ public class EventDTO {
         this.isApproved = event.isApproved();
         this.orgId = event.getOrgId();
         this.images = images;
-    }
-
-    public EventDTO(Event event, String userId, String haveParticipantId) {
-        this.eventId = event.getEventId();
-        this.begin = event.getBegin();
-        this.end = event.getEnd();
-        this.hosterId = event.getHoster().getMemberId();
-        this.eventName = event.getEventName();
-        this.eventDescription = event.getEventDescription();
-        this.participants = event.getParticipants();
-        this.insDate = event.getInsDate();
-        this.delFlg = event.isDelFlg();
-        this.isApproved = event.isApproved();
-        this.orgId = event.getOrgId();
-        this.userId = userId;
-        this.isJoin = haveParticipantId != null && !haveParticipantId.isBlank();
     }
 
     public static List<EventDTO> fromList(List<Event> events) {

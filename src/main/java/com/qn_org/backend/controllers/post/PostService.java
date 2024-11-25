@@ -2,7 +2,6 @@ package com.qn_org.backend.controllers.post;
 
 import com.qn_org.backend.common_requests.FromToIndexRequest;
 import com.qn_org.backend.config.JwtService;
-import com.qn_org.backend.controllers.image.GetImagesRequest;
 import com.qn_org.backend.controllers.image.ImageService;
 import com.qn_org.backend.controllers.image.SaveImagesRequest;
 import com.qn_org.backend.models.*;
@@ -42,6 +41,7 @@ public class PostService {
         }
         Organization org = member.getOrganization();
         org.setPosts(org.getPosts()+1);
+        boolean isApproved = member.getRoleLevel() == 2;
         Post post = Post.builder()
                 .postId("POS_" + UUID.randomUUID())
                 .poster(member)
@@ -49,12 +49,12 @@ public class PostService {
                 .postContent(request.getPostContent())
                 .comments(0)
                 .insDate(new Date())
-                .isApproved(MemberRole.isAdmin(member.getRoleLevel()))
+                .isApproved(isApproved)
                 .orgId(org.getOrgId())
                 .build();
         repository.save(post);
         orgRepository.save(org);
-        List<Image> images = imageService.saveImages(new SaveImagesRequest(post.getPostId(), request.getImages() == null?new ArrayList<>():request.getImages()));
+        List<Image> images = imageService.saveImages(new SaveImagesRequest(post.getPostId(), request.getImages()));
         return new PostDTO(post, images);
     }
 
@@ -63,7 +63,7 @@ public class PostService {
         String userId = jwtService.extractUserId(servletRequest);
         Member member = memberRepository.getReferenceById(request.getApprovalId());
         if(!(
-                MemberRole.isAdmin(member.getRoleLevel()) &&
+                member.getRoleLevel() == 2 &&
                 member.getOrganization().getOrgId().equals(post.getOrgId()) &&
                 member.getUserId().equals(userId)
         ))
@@ -84,15 +84,8 @@ public class PostService {
         post.setPostTitle(request.getPostTitle());
         post.setPostContent(request.getPostContent());
         repository.save(post);
-        if(request.getDelImagesId() != null){
-            imageService.deleteImage(request.getDelImagesId());
-        }
-        if(request.getNewImage() != null) {
-            imageService.saveImages(new SaveImagesRequest(post.getPostId(), request.getNewImage()));
-        }
-        var parentId = new ArrayList<String>();
-        parentId.add(post.getPostId());
-        List<Image> images = imageService.getImage(parentId);
+        imageService.deleteImage(request.getDelImagesId());
+        List<Image> images = imageService.saveImages(new SaveImagesRequest(post.getPostId(), request.getNewImage()));
         return new PostDTO(post, images);
     }
 
@@ -103,7 +96,7 @@ public class PostService {
         User user = userRepository.getReferenceById(member.getUserId());
         if(user.isSuperAdmin())
             isDeleted = true;
-        if(member.getMemberId().equals(request.getPosterId()) || MemberRole.isAdmin(member.getRoleLevel()))
+        if(member.getMemberId().equals(request.getPosterId()) || member.getRoleLevel() == 2)
             isDeleted = true;
         if(isDeleted) {
             post.setDelFlg(true);

@@ -23,12 +23,4 @@ public class FromToIndexRequest {
     public int getOffset() {
         return this.getFrom();
     }
-
-    public int getPage() {
-        return getOffset()/getLimit();
-    }
-
-    public int getSize() {
-        return getLimit();
-    }
 }

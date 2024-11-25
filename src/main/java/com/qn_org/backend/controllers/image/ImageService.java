@@ -2,7 +2,6 @@ package com.qn_org.backend.controllers.image;
 
 import com.qn_org.backend.models.Image;
 import com.qn_org.backend.repositories.ImageRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,10 +24,6 @@ public class ImageService {
     private String imageDirectory;
     public List<Image> getImage(GetImagesRequest request) {
         return repository.getImageByParentId(request.getParentIds());
-    }
-
-    public List<Image> getImage(List<String> parentIds) {
-        return repository.getImageByParentId(parentIds);
     }
 
     public List<Image> saveImages(SaveImagesRequest request) throws IOException {
@@ -86,7 +81,6 @@ public class ImageService {
         return "";
     }
 
-    @Transactional
     public void deleteImage(List<String> delImagesId) {
         repository.deleteAllById(delImagesId);
     }
