@@ -51,6 +51,16 @@ public interface MemberRepository extends JpaRepository<Member,String> {
     List<MemberInfo> getMemberInfo(@Param("orgId") String orgId,@Param("userId") String userId);
 
     @Query("""
+        SELECT new com.qn_org.backend.controllers.member.MemberInfo(
+            m.memberId, u.userId, u.emailAddress, u.displayName, u.userAvatar, u.userType, m.roleLevel)
+        FROM Member m
+        JOIN User u
+        ON m.userId = u.userId
+        WHERE m.userId IN :userIds AND m.organization.orgId = :orgId
+    """)
+    List<MemberInfo> getMemberInfos(@Param("orgId") String orgId,@Param("userIds") List<String> userIds);
+
+    @Query("""
         SELECT new com.qn_org.backend.controllers.member.ManageMember(
                                        m.memberId,
                                        m.organization.orgId,

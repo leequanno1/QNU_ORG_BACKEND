@@ -2,6 +2,7 @@ package com.qn_org.backend.controllers.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.qn_org.backend.models.Event;
+import com.qn_org.backend.models.EventParticipant;
 import com.qn_org.backend.models.Image;
 import lombok.Data;
 
@@ -69,7 +70,7 @@ public class EventDTO {
         this.images = images;
     }
 
-    public EventDTO(Event event, String userId, String haveParticipantId) {
+    public EventDTO(Event event, String userId, EventParticipant participant) {
         this.eventId = event.getEventId();
         this.begin = event.getBegin();
         this.end = event.getEnd();
@@ -82,7 +83,23 @@ public class EventDTO {
         this.isApproved = event.isApproved();
         this.orgId = event.getOrgId();
         this.userId = userId;
-        this.isJoin = haveParticipantId != null && !haveParticipantId.isBlank();
+        this.isJoin = participant != null && !participant.isDelFlg();
+    }
+
+    public EventDTO(Event event, String userId, boolean isJoin) {
+        this.eventId = event.getEventId();
+        this.begin = event.getBegin();
+        this.end = event.getEnd();
+        this.hosterId = event.getHoster().getMemberId();
+        this.eventName = event.getEventName();
+        this.eventDescription = event.getEventDescription();
+        this.participants = event.getParticipants();
+        this.insDate = event.getInsDate();
+        this.delFlg = event.isDelFlg();
+        this.isApproved = event.isApproved();
+        this.orgId = event.getOrgId();
+        this.userId = userId;
+        this.isJoin = isJoin;
     }
 
     public static List<EventDTO> fromList(List<Event> events) {

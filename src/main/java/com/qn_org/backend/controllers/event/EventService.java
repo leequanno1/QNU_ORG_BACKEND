@@ -5,22 +5,17 @@ import com.qn_org.backend.config.JwtService;
 import com.qn_org.backend.controllers.image.GetImagesRequest;
 import com.qn_org.backend.controllers.image.ImageService;
 import com.qn_org.backend.controllers.image.SaveImagesRequest;
+import com.qn_org.backend.controllers.member.MemberInfo;
 import com.qn_org.backend.controllers.post.GetInOrgRequest;
-import com.qn_org.backend.models.Event;
-import com.qn_org.backend.models.Member;
-import com.qn_org.backend.models.Organization;
-import com.qn_org.backend.models.User;
+import com.qn_org.backend.models.*;
 import com.qn_org.backend.models.enums.MemberRole;
-import com.qn_org.backend.repositories.EventRepository;
-import com.qn_org.backend.repositories.MemberRepository;
-import com.qn_org.backend.repositories.UserRepository;
+import com.qn_org.backend.repositories.*;
 import com.qn_org.backend.services.exceptions.ApprovalNoAuthorityException;
 import com.qn_org.backend.services.exceptions.EditorNoAuthorityException;
 import com.qn_org.backend.services.exceptions.NoAuthorityToDoActionException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -37,6 +32,8 @@ public class EventService {
     private final ImageService imageService;
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final OrganizationRepository orgRepository;
+    private final EventParticipantRepository eventPartiRepository;
 
     public EventDTO create(CreateEventRequest request, HttpServletRequest servletRequest) throws IOException, NoAuthorityToDoActionException {
         String userId = jwtService.extractUserId(servletRequest);
@@ -45,7 +42,9 @@ public class EventService {
             throw new NoAuthorityToDoActionException();
         }
         Organization org = member.getOrganization();
-        org.setEvents(org.getEvents()+1);
+        if(MemberRole.isAdmin(member.getRoleLevel())){
+            org.setEvents(org.getEvents()+1);
+        }
         Event event = Event.builder()
                 .eventId("EVN_" + UUID.randomUUID())
                 .begin(request.getBegin())
@@ -58,6 +57,7 @@ public class EventService {
                 .orgId(org.getOrgId())
                 .build();
         repository.save(event);
+        orgRepository.save(org);
         var images = imageService.saveImages(new SaveImagesRequest(event.getEventId(),request.getImages() == null ? new ArrayList<>() : request.getImages()));
         return new EventDTO(event, images);
     }
@@ -73,7 +73,10 @@ public class EventService {
         ))
             throw new ApprovalNoAuthorityException();
         event.setApproved(true);
+        var org = orgRepository.getReferenceById(member.getOrganization().getOrgId());
+        org.setEvents(org.getEvents()+1);
         repository.save(event);
+        orgRepository.save(org);
         // TODO: Handle add notification here.
         return new EventDTO(event);
     }
@@ -110,6 +113,9 @@ public class EventService {
         if(isDeleted) {
             event.setDelFlg(true);
             repository.save(event);
+            var org = orgRepository.getReferenceById(member.getOrganization().getOrgId());
+            org.setEvents(org.getEvents()-1);
+            orgRepository.save(org);
             return new EventDTO(event);
         } else {
             throw new NoAuthorityToDoActionException();
@@ -122,8 +128,7 @@ public class EventService {
         List<String> orgIdList = User.jsonStringToList(orgIds);
         if(!request.isValid())
             return new ArrayList<>();
-//        return repository.getAll(orgIdList);
-        return repository.getAll(orgIdList, PageRequest.of(request.getPage(), request.getSize()));
+        return repository.getAll(orgIdList,userId ,PageRequest.of(request.getPage(), request.getSize()));
     }
 
     public List<EventDTO> getInOrg(GetInOrgRequest request, HttpServletRequest servletRequest) {
@@ -131,7 +136,7 @@ public class EventService {
         String orgIds = userRepository.getReferenceById(userId).getOrgIds();
         List<String> orgIdList = User.jsonStringToList(orgIds);
         if(orgIdList.contains(request.getOrgId())) {
-            return repository.getInOrg(request.getOrgId(), PageRequest.of(request.getOffset().getPage(), request.getOffset().getSize()));
+            return repository.getInOrg(request.getOrgId(), userId,PageRequest.of(request.getOffset().getPage(), request.getOffset().getSize()));
         }
         return new ArrayList<>();
     }
@@ -155,5 +160,74 @@ public class EventService {
             return new EventDTO(event);
         }
         return null;
+    }
+
+    public EventDTO joinEvent(JoinEventRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
+        var userId = jwtService.extractUserId(servletRequest);
+        var user = userRepository.getReferenceById(userId);
+        var event = repository.getReferenceById(request.getEventId());
+        if(event.getBegin().getTime() < new Date().getTime()) {
+            throw new NoAuthorityToDoActionException();
+        }
+        String eventPartiId = eventPartiRepository.isExist(event.getEventId(), user.getUserId());
+        EventParticipant eventParti;
+        if(eventPartiId != null && !eventPartiId.isBlank()) {
+            eventParti = eventPartiRepository.getReferenceById(eventPartiId);
+            if(!eventParti.isDelFlg()) {
+                return new EventDTO(event, user.getUserId(), true);
+            }
+            eventParti.setDelFlg(false);
+        } else {
+            eventParti = EventParticipant.builder()
+                    .participantId("EVP_"+UUID.randomUUID())
+                    .event(event)
+                    .user(user)
+                    .insDate(new Date())
+                    .delFlg(false)
+                    .build();
+        }
+        event.setParticipants(event.getParticipants()+1);
+        repository.save(event);
+        eventPartiRepository.save(eventParti);
+        return new EventDTO(event, user.getUserId(), true);
+    }
+
+    public EventDTO outEvent(JoinEventRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
+        var userId = jwtService.extractUserId(servletRequest);
+        var user = userRepository.getReferenceById(userId);
+        var event = repository.getReferenceById(request.getEventId());
+        if(event.getBegin().getTime() < new Date().getTime()) {
+            throw new NoAuthorityToDoActionException();
+        }
+        String eventPartiId = eventPartiRepository.isExist(event.getEventId(), user.getUserId());
+        if(eventPartiId != null && !eventPartiId.isBlank()) {
+            EventParticipant eventParti = eventPartiRepository.getReferenceById(eventPartiId);
+            if(eventParti.isDelFlg()) {
+                return new EventDTO(event, user.getUserId(), false);
+            }
+            eventParti.setDelFlg(true);
+            eventPartiRepository.save(eventParti);
+            event.setParticipants(event.getParticipants()-1);
+            repository.save(event);
+        }
+        return new EventDTO(event, user.getUserId(), false);
+    }
+
+    public List<MemberInfo> getParticipant(GetParticipantRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
+        var userId = jwtService.extractUserId(servletRequest);
+        var event = repository.getReferenceById(request.getEventId());
+        if(event.getEventId() != null && !event.getEventId().isBlank()) {
+            var member = memberRepository.getMemberInfo(event.getOrgId(), userId);
+            if(member != null && !member.isEmpty()) {
+                var memberInfo = member.getFirst();
+                if(!(memberInfo.getMemberId().equals(event.getHoster().getMemberId()) || MemberRole.isAdmin(memberInfo.getRoleLevel()))){
+                    throw new NoAuthorityToDoActionException();
+                }
+            }
+            var orgId = event.getOrgId();
+            List<String> userIds = eventPartiRepository.getUserIdsByEventId(event.getEventId());
+            return memberRepository.getMemberInfos(orgId, userIds);
+        }
+        return new ArrayList<>();
     }
 }

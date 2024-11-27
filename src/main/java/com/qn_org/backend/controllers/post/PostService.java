@@ -41,7 +41,9 @@ public class PostService {
             throw new NoAuthorityToDoActionException();
         }
         Organization org = member.getOrganization();
-        org.setPosts(org.getPosts()+1);
+        if(MemberRole.isAdmin(member.getRoleLevel())){
+            org.setPosts(org.getPosts()+1);
+        }
         Post post = Post.builder()
                 .postId("POS_" + UUID.randomUUID())
                 .poster(member)
@@ -69,7 +71,10 @@ public class PostService {
         ))
             throw new ApprovalNoAuthorityException();
         post.setApproved(true);
+        var org = orgRepository.getReferenceById(member.getOrganization().getOrgId());
+        org.setPosts(org.getPosts()+1);
         repository.save(post);
+        orgRepository.save(org);
         // TODO: Handle add notification here.
         return new PostDTO(post);
     }
@@ -108,6 +113,9 @@ public class PostService {
         if(isDeleted) {
             post.setDelFlg(true);
             repository.save(post);
+            var org = orgRepository.getReferenceById(member.getOrganization().getOrgId());
+            org.setPosts(org.getPosts() - 1);
+            orgRepository.save(org);
             return new PostDTO(post);
         } else {
             throw new NoAuthorityToDoActionException();

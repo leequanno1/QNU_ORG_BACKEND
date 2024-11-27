@@ -31,7 +31,6 @@ public class ValidationController {
 
     @ExceptionHandler(MessagingException.class)
     public QnuResponseEntity<String> handleMessagingException(MessagingException exception){
-        exception.printStackTrace();
         return new QnuResponseEntity<>("Some errors happened while sending email", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

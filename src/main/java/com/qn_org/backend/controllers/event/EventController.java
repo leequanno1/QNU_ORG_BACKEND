@@ -1,6 +1,8 @@
 package com.qn_org.backend.controllers.event;
 
 import com.qn_org.backend.common_requests.FromToIndexRequest;
+import com.qn_org.backend.controllers.member.MemberDTO;
+import com.qn_org.backend.controllers.member.MemberInfo;
 import com.qn_org.backend.controllers.post.GetInOrgRequest;
 import com.qn_org.backend.responses.QnuResponseEntity;
 import com.qn_org.backend.services.exceptions.ApprovalNoAuthorityException;
@@ -62,8 +64,28 @@ public class EventController {
         return new QnuResponseEntity<>(service.getById(eventId, servletRequest), HttpStatus.OK);
     }
 
+    @PostMapping("/join_event")
+    public QnuResponseEntity<EventDTO> joinEvent(@RequestBody JoinEventRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
+        return new QnuResponseEntity<>(service.joinEvent(request,servletRequest), HttpStatus.OK);
+    }
+
+    @PostMapping("/out_event")
+    public QnuResponseEntity<EventDTO> outEvent(@RequestBody JoinEventRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
+        return new QnuResponseEntity<>(service.outEvent(request, servletRequest), HttpStatus.OK);
+    }
+
+    @PostMapping("/get_participant")
+    public QnuResponseEntity<List<MemberInfo>> getParticipant(@RequestBody GetParticipantRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
+        return new QnuResponseEntity<>(service.getParticipant(request, servletRequest), HttpStatus.OK);
+    }
+
     @ExceptionHandler(ApprovalNoAuthorityException.class)
     public QnuResponseEntity<String> handleApprovalNoAuthorityException() {
         return new QnuResponseEntity<>("User have no authority to do this action", HttpStatus.NON_AUTHORITATIVE_INFORMATION);
+    }
+
+    @ExceptionHandler(NoAuthorityToDoActionException.class)
+    public QnuResponseEntity<String> handleNoAuthorityToDoActionException() {
+        return new QnuResponseEntity<>("User have no authority to do this action", HttpStatus.BAD_REQUEST);
     }
 }
