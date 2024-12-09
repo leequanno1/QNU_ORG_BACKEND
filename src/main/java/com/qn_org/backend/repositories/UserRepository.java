@@ -1,5 +1,6 @@
 package com.qn_org.backend.repositories;
 
+import com.qn_org.backend.controllers.member.PreviewMember;
 import com.qn_org.backend.controllers.user.StaffUserInfoResponse;
 import com.qn_org.backend.controllers.user.StudentUserInfoResponse;
 import com.qn_org.backend.controllers.user.UserInfoResponse;
@@ -45,4 +46,25 @@ public interface UserRepository extends JpaRepository<User, String> {
                 WHERE u.userId = :userId
             """)
     StaffUserInfoResponse getStaffUserInfo(@Param("userId") String userId);
+
+    @Query("""
+        SELECT new com.qn_org.backend.controllers.member.PreviewMember(
+                                       u.userId,
+                                       st.fullName,
+                                       d.depName,
+                                       sf.fullName,
+                                       d2.depName,
+                                       u.orgIds,
+                                       u.userType
+                                   )
+                                   FROM User u
+                                   LEFT JOIN StudentInfo st ON (u.userInfoKey LIKE 'STU%' AND u.userId = st.studentKey)
+                                   LEFT JOIN Major mj ON st.major.majorId = mj.majorId
+                                   LEFT JOIN Department d ON mj.department.departmentId = d.departmentId
+                                   LEFT JOIN StaffInfo sf ON ((u.userInfoKey LIKE 'TEA%' OR u.userInfoKey LIKE 'STA%') AND u.userId = sf.staffKey)
+                                   LEFT JOIN Department d2 ON sf.department.departmentId = d2.departmentId
+                                   WHERE u.delFlg = false AND u.isSuperAdmin = false
+                                   ORDER BY u.insDate DESC
+    """)
+    List<PreviewMember> getUsersForAdmin();
 }

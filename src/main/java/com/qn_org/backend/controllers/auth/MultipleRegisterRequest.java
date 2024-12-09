@@ -12,7 +12,6 @@ import java.util.List;
 @Data
 @Builder
 public class MultipleRegisterRequest {
-    private List<RequestUserData> userData;
     private List<RequestStudentInfo> studentInfos;
     private List<RequestStaffInfo> staffInfos;
 }

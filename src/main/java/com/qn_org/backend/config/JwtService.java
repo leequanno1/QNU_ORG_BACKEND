@@ -1,11 +1,14 @@
 package com.qn_org.backend.config;
 
+import com.qn_org.backend.models.User;
+import com.qn_org.backend.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +19,18 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@AllArgsConstructor
 public class JwtService {
     private static final String SECRET_KEY = "a3e0f3d725867dd260b97d3b785620ab898b19c7b6ac72de81f3c564efa22788c5e23e1684383bca9dc3f360f88b8351f01d5c6422315d7ea66af6a2";
+    private final UserRepository userRepository;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public boolean isSuperAdmin(HttpServletRequest request) {
+        var user = userRepository.getReferenceById(extractUserId(request));
+        return user.isSuperAdmin();
     }
 
     public String extractUserId(HttpServletRequest request) {
@@ -34,16 +44,18 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(User userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
     public String generateToken(
             Map<String, Object> extraClaims,
-            UserDetails userDetails
+            User userDetails
     ) {
         HashMap<String,Object> claim = new HashMap<>();
         claim.put("expr",new Date(System.currentTimeMillis() + 8640000));
+        claim.put("is_super_admin", userDetails.isSuperAdmin());
+        claim.put("is_password_validated", userDetails.isPasswordValidatedFlg());
         return Jwts
                 .builder()
                 .setClaims(extraClaims)

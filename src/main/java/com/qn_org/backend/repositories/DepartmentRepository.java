@@ -19,4 +19,7 @@ public interface DepartmentRepository extends JpaRepository<Department,String> {
 
     @Query(value = "SELECT COUNT(DEPARTMENT_ID) FROM Department WHERE DEL_FLG = 1", nativeQuery = true)
     Integer getDeletedTotal();
+
+    @Query(value = "SELECT * FROM Department WHERE DEL_FLG = 0 ORDER BY DEP_NAME", nativeQuery = true)
+    List<Department> getAll();
 }

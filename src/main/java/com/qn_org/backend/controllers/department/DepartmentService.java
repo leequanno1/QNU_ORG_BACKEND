@@ -1,9 +1,14 @@
 package com.qn_org.backend.controllers.department;
 
 import com.qn_org.backend.common_requests.FromToIndexRequest;
+import com.qn_org.backend.config.JwtService;
 import com.qn_org.backend.models.Department;
+import com.qn_org.backend.models.User;
 import com.qn_org.backend.repositories.DepartmentRepository;
+import com.qn_org.backend.repositories.UserRepository;
 import com.qn_org.backend.services.exceptions.IdNotExistException;
+import com.qn_org.backend.services.exceptions.NoAuthorityToDoActionException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +21,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DepartmentService {
     private final DepartmentRepository repository;
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
     public Department createDep(CreateDepRequest request) {
         Department dep = Department.builder()
                 .departmentId("DEP_"+ UUID.randomUUID())
@@ -48,6 +55,15 @@ public class DepartmentService {
         }
     }
 
+    public List<Department> getAll(HttpServletRequest servletRequest) {
+        var userId = jwtService.extractUserId(servletRequest);
+        User user = userRepository.getReferenceById(userId);
+        if(user.isSuperAdmin()) {
+            return repository.getAll();
+        }
+        return new ArrayList<>();
+    }
+
     public List<Department> getAll(FromToIndexRequest request) {
         if(!request.isValid()) {
             return new ArrayList<>();
@@ -72,5 +88,32 @@ public class DepartmentService {
 
     public Integer getDeletedTotal() {
         return repository.getDeletedTotal();
+    }
+
+    public List<Department> createMany(CreateManyDepRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
+        var id = jwtService.extractUserId(servletRequest);
+        var user = userRepository.getReferenceById(id);
+        if(user.isSuperAdmin()) {
+            List<Department> deps = new ArrayList<>();
+            var depNames = request.getDepNames();
+            if(depNames != null && !depNames.isEmpty()) {
+                for(var name : depNames) {
+                    deps.add(generateDep(name));
+                }
+                repository.saveAll(deps);
+            }
+            return deps;
+        }
+        throw new NoAuthorityToDoActionException();
+    }
+
+    private Department generateDep(String depName) {
+        return Department.builder()
+                .departmentId("DEP_"+UUID.randomUUID())
+                .depName(depName)
+                .majors(0)
+                .delFlg(false)
+                .insDate(new Date())
+                .build();
     }
 }

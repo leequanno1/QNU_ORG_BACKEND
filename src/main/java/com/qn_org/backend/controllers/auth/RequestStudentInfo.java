@@ -10,6 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class RequestStudentInfo {
+    private String userId;
+
+    private String emailAddress;
+
+    private String displayName;
+
+    private int userType;
+
     private String studentKey;
 
     private String majorId;

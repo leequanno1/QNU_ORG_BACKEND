@@ -4,6 +4,8 @@ import com.qn_org.backend.common_requests.FromToIndexRequest;
 import com.qn_org.backend.models.Organization;
 import com.qn_org.backend.responses.QnuResponseEntity;
 import com.qn_org.backend.services.exceptions.IdNotExistException;
+import com.qn_org.backend.services.exceptions.NoAuthorityToDoActionException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,8 +22,8 @@ public class OrganizationController {
 
     private final OrganizationService service;
 
-    @PutMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public QnuResponseEntity<Organization> createOrg(@ModelAttribute CreateOrganizationRequest request) throws IOException {
+    @PutMapping("/create")
+    public QnuResponseEntity<Organization> createOrg(@RequestBody CreateOrganizationRequest request){
         return new QnuResponseEntity<>(service.createOrganization(request),HttpStatus.OK);
     }
 
@@ -46,8 +48,8 @@ public class OrganizationController {
     }
 
     @DeleteMapping("/delete")
-    public QnuResponseEntity<Organization> deleteOrg(@RequestBody IdRequest request) throws IdNotExistException {
-        return new QnuResponseEntity<>(service.deleteOrganization(request.getOrgId()), HttpStatus.OK);
+    public QnuResponseEntity<Organization> deleteOrg(@RequestBody IdRequest request, HttpServletRequest servletRequest) throws IdNotExistException, NoAuthorityToDoActionException {
+        return new QnuResponseEntity<>(service.deleteOrganization(request.getOrgId(), servletRequest), HttpStatus.OK);
     }
 
     @GetMapping("/get_all_total")
@@ -73,5 +75,10 @@ public class OrganizationController {
     @ExceptionHandler(IOException.class)
     public QnuResponseEntity<String> ioExceptionHandler() {
         return new QnuResponseEntity<>("There is an error while saving image(s)! Please retry later.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(NoAuthorityToDoActionException.class)
+    public QnuResponseEntity<String> noAuthorityToDoActionExceptionHandler() {
+        return new QnuResponseEntity<>("User have no authority to do this action.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -12,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class CreateOrganizationRequest {
     private String orgName;
-    private String orgDescription;
-    private MultipartFile orgAvatar;
-    private MultipartFile orgBackGround;
+    private String adminId;
+    private List<String> memberIds;
 }

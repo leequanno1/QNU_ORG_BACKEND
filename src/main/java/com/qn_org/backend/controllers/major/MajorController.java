@@ -1,8 +1,9 @@
 package com.qn_org.backend.controllers.major;
 
 import com.qn_org.backend.common_requests.FromToIndexRequest;
-import com.qn_org.backend.models.Major;
 import com.qn_org.backend.responses.QnuResponseEntity;
+import com.qn_org.backend.services.exceptions.NoAuthorityToDoActionException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +15,16 @@ import java.util.List;
 @RequiredArgsConstructor
 @CrossOrigin
 public class MajorController {
-    private MajorService service;
+    private final MajorService service;
 
     @PutMapping("/create")
     public QnuResponseEntity<MajorDTO> create(@RequestBody CreateMajorRequest request) {
         return new QnuResponseEntity<>(service.create(request), HttpStatus.OK);
+    }
+
+    @PostMapping("/create_many")
+    public QnuResponseEntity<List<MajorExtend>> createMany(@RequestBody CreateManyMajorRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
+        return new QnuResponseEntity<>(service.createMany(request, servletRequest), HttpStatus.OK);
     }
 
     @PutMapping("/update")
@@ -34,6 +40,11 @@ public class MajorController {
     @GetMapping("/get-all")
     public QnuResponseEntity<List<MajorDTO>> getAll (@RequestBody FromToIndexRequest request) {
         return new QnuResponseEntity<>(service.getAll(request), HttpStatus.OK);
+    }
+
+    @GetMapping("/get_all_major_extend")
+    public QnuResponseEntity<List<MajorExtend>> getAllForBoard (HttpServletRequest servletRequest) {
+        return new QnuResponseEntity<>(service.getAllForBoard(servletRequest), HttpStatus.OK);
     }
 
     @GetMapping("/get-deleted")

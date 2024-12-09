@@ -16,7 +16,7 @@ public interface EventParticipantRepository extends JpaRepository<EventParticipa
 
     @Query("""
         SELECT evp.user.userId FROM EventParticipant evp
-        WHERE evp.event.eventId = :eventId
+        WHERE evp.event.eventId = :eventId AND evp.delFlg = false
     """)
     List<String> getUserIdsByEventId(@Param("eventId") String eventId);
 }

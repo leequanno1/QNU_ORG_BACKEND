@@ -4,6 +4,8 @@ import com.qn_org.backend.common_requests.FromToIndexRequest;
 import com.qn_org.backend.models.Department;
 import com.qn_org.backend.responses.QnuResponseEntity;
 import com.qn_org.backend.services.exceptions.IdNotExistException;
+import com.qn_org.backend.services.exceptions.NoAuthorityToDoActionException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,11 @@ public class DepartmentController {
         return new QnuResponseEntity<>(service.createDep(request), HttpStatus.OK);
     }
 
+    @PutMapping("/create_many")
+    public QnuResponseEntity<List<Department>> createMany(@RequestBody CreateManyDepRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
+        return new QnuResponseEntity<>(service.createMany(request, servletRequest), HttpStatus.OK);
+    }
+
     @PutMapping("/update")
     public QnuResponseEntity<Department> update(@RequestBody UpdateDepRequest request) throws IdNotExistException {
         return new QnuResponseEntity<>(service.update(request), HttpStatus.OK);
@@ -33,6 +40,11 @@ public class DepartmentController {
     }
 
     @GetMapping("/get-all")
+    public QnuResponseEntity<List<Department>> getAll(HttpServletRequest servletRequest) {
+        return new QnuResponseEntity<>(service.getAll(servletRequest), HttpStatus.OK);
+    }
+
+    @PostMapping("/get-all")
     public QnuResponseEntity<List<Department>> getAll(@RequestBody FromToIndexRequest request){
         return new QnuResponseEntity<>(service.getAll(request),HttpStatus.OK);
     }

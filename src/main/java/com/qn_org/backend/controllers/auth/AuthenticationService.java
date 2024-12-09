@@ -115,12 +115,11 @@ public class AuthenticationService implements QnuService<User> {
     }
 
     public String multipleRegister(MultipleRegisterRequest request, HttpServletRequest servletRequest) throws EditorNoAuthorityException {
-        User register = repository.getReferenceById(jwtService.extractUserId(servletRequest));
-        if(!register.isSuperAdmin())
+        if(!jwtService.isSuperAdmin(servletRequest))
             throw new EditorNoAuthorityException();
         HashMap<String,Major> majorHashMap = new HashMap<>();
         HashMap<String,Department> departmentHashMap = new HashMap<>();
-        var users = userDataToUsers(request.getUserData());
+        var users = userDataToUsers(request);
         var studentInfos = studentDataToStudents(request.getStudentInfos(),majorHashMap);
         var staffInfos = staffDataToStaffs(request.getStaffInfos(), departmentHashMap);
         repository.saveAll(users);
@@ -129,15 +128,20 @@ public class AuthenticationService implements QnuService<User> {
         return "Register OK";
     }
 
-    private List<User> userDataToUsers(List<RequestUserData> userData) {
+    private List<User> userDataToUsers(MultipleRegisterRequest userData) {
+        var students = userData.getStudentInfos();
+        var staffs = userData.getStaffInfos();
         List<User> users = new ArrayList<>();
-        for(RequestUserData data : userData) {
-            users.add(userDataToUser(data));
+        for(var student : students) {
+            users.add(userDataToUser(student));
+        }
+        for(var staff : staffs) {
+            users.add(userDataToUser(staff));
         }
         return users;
     }
 
-    private User userDataToUser(RequestUserData data) {
+    private User userDataToUser(RequestStudentInfo data) {
         return User.builder()
                 .userId(data.getUserId())
                 .password("123456")
@@ -146,6 +150,20 @@ public class AuthenticationService implements QnuService<User> {
                 .userType(data.getUserType())
                 .userInfoKey(RegisterRequest.handleGetUserInfoKey(data.getUserType()))
                 .insDate(new Date())
+                .orgIds("[]")
+                .build();
+    }
+
+    private User userDataToUser(RequestStaffInfo data) {
+        return User.builder()
+                .userId(data.getUserId())
+                .password("123456")
+                .emailAddress(data.getEmailAddress())
+                .displayName(data.getDisplayName())
+                .userType(data.getUserType())
+                .userInfoKey(RegisterRequest.handleGetUserInfoKey(data.getUserType()))
+                .insDate(new Date())
+                .orgIds("[]")
                 .build();
     }
 

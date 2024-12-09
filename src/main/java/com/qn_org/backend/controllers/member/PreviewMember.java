@@ -15,4 +15,12 @@ public class PreviewMember {
     private String depName;
     private String orgId;
     private int userType;
+
+    public PreviewMember(String userId, String fullNameSt, String depNameSt, String fullNameSf, String depNameSf,String orgId, int userType){
+        this.userId = userId;
+        this.fullName = fullNameSt == null || fullNameSt.isBlank() ? fullNameSf : fullNameSt;
+        this.depName = depNameSt == null || depNameSt.isBlank() ? depNameSf : depNameSt;
+        this.orgId = orgId;
+        this.userType = userType;
+    }
 }

@@ -56,7 +56,7 @@ public interface MemberRepository extends JpaRepository<Member,String> {
         FROM Member m
         JOIN User u
         ON m.userId = u.userId
-        WHERE m.userId IN :userIds AND m.organization.orgId = :orgId
+        WHERE m.userId IN :userIds AND m.organization.orgId = :orgId AND m.delFlg = false
     """)
     List<MemberInfo> getMemberInfos(@Param("orgId") String orgId,@Param("userIds") List<String> userIds);
 
@@ -72,14 +72,16 @@ public interface MemberRepository extends JpaRepository<Member,String> {
                                        m.delFlg,
                                        u.userInfoKey,
                                        d.departmentId,
-                                       d.depName
+                                       d.depName,
+                                       d2.departmentId,
+                                       d2.depName
                                    )
                                    FROM Member m
                                    JOIN User u ON m.userId = u.userId
                                    LEFT JOIN StudentInfo st ON (u.userInfoKey LIKE 'STU%' AND m.userId = st.studentKey)
                                    LEFT JOIN Major mj ON st.major.majorId = mj.majorId
                                    LEFT JOIN Department d ON mj.department.departmentId = d.departmentId
-                                   LEFT JOIN StaffInfo sf ON (u.userInfoKey LIKE 'TEA%' OR u.userInfoKey LIKE 'STA%' AND m.userId = sf.staffKey)
+                                   LEFT JOIN StaffInfo sf ON ((u.userInfoKey LIKE 'TEA%' OR u.userInfoKey LIKE 'STA%') AND m.userId = sf.staffKey)
                                    LEFT JOIN Department d2 ON sf.department.departmentId = d2.departmentId
                                    WHERE m.organization.orgId = :orgId AND m.delFlg = false
                                    ORDER BY m.insDate DESC
@@ -97,6 +99,8 @@ public interface MemberRepository extends JpaRepository<Member,String> {
                                        u.userId,
                                        st.fullName,
                                        d.depName,
+                                       sf.fullName,
+                                       d2.depName,
                                        u.orgIds,
                                        u.userType
                                    )
@@ -104,7 +108,7 @@ public interface MemberRepository extends JpaRepository<Member,String> {
                                    LEFT JOIN StudentInfo st ON (u.userInfoKey LIKE 'STU%' AND u.userId = st.studentKey)
                                    LEFT JOIN Major mj ON st.major.majorId = mj.majorId
                                    LEFT JOIN Department d ON mj.department.departmentId = d.departmentId
-                                   LEFT JOIN StaffInfo sf ON (u.userInfoKey LIKE 'TEA%' OR u.userInfoKey LIKE 'STA%' AND u.userId = sf.staffKey)
+                                   LEFT JOIN StaffInfo sf ON ((u.userInfoKey LIKE 'TEA%' OR u.userInfoKey LIKE 'STA%') AND u.userId = sf.staffKey)
                                    LEFT JOIN Department d2 ON sf.department.departmentId = d2.departmentId
                                    WHERE u.userId IN :userIds AND u.delFlg = false
                                    ORDER BY u.insDate DESC
@@ -113,7 +117,7 @@ public interface MemberRepository extends JpaRepository<Member,String> {
 
     @Query("""
         SELECT m.userId FROM Member m
-        WHERE m.userId IN :userIds and m.organization.orgId = :orgId
+        WHERE m.userId IN :userIds AND m.organization.orgId = :orgId AND m.delFlg = false
     """)
     List<String> getExitedUserId(@Param("userIds") List<String> userIds, @Param("orgId") String orgId);
 }

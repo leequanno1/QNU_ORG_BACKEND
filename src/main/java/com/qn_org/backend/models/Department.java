@@ -27,6 +27,9 @@ public class Department {
     @Column(name = "DEP_NAME")
     private String depName;
 
+    @Column(name = "MAJORS")
+    private int majors = 0;
+
     @Column(name = "DEL_FLG", nullable = false)
     private boolean delFlg = false;
 

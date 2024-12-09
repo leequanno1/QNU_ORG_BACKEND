@@ -205,8 +205,8 @@ public class EventService {
             if(eventParti.isDelFlg()) {
                 return new EventDTO(event, user.getUserId(), false);
             }
-            eventParti.setDelFlg(true);
-            eventPartiRepository.save(eventParti);
+//            eventParti.setDelFlg(true);
+            eventPartiRepository.delete(eventParti);
             event.setParticipants(event.getParticipants()-1);
             repository.save(event);
         }

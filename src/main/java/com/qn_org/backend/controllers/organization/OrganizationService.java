@@ -1,7 +1,9 @@
 package com.qn_org.backend.controllers.organization;
 
 import com.qn_org.backend.common_requests.FromToIndexRequest;
+import com.qn_org.backend.config.JwtService;
 import com.qn_org.backend.controllers.image.ImageService;
+import com.qn_org.backend.controllers.member.MemberService;
 import com.qn_org.backend.models.Organization;
 import com.qn_org.backend.models.User;
 import com.qn_org.backend.repositories.OrganizationRepository;
@@ -9,6 +11,8 @@ import com.qn_org.backend.repositories.UserRepository;
 import com.qn_org.backend.services.JsonUtil;
 import com.qn_org.backend.services.QnuService;
 import com.qn_org.backend.services.exceptions.IdNotExistException;
+import com.qn_org.backend.services.exceptions.NoAuthorityToDoActionException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,24 +30,23 @@ public class OrganizationService implements QnuService<Organization> {
     private final OrganizationRepository repository;
     private final ImageService imageService;
     private final UserRepository userRepository;
+    private final MemberService memberService;
+    private final JwtService jwtService;
 
-    public Organization createOrganization(CreateOrganizationRequest request) throws IOException {
+    public Organization createOrganization(CreateOrganizationRequest request){
         Organization org = Organization.builder()
                 .orgId("ORG_" + UUID.randomUUID())
                 .orgName(request.getOrgName())
-                .orgDescription(request.getOrgDescription())
+                .orgDescription("")
                 .members(0)
                 .insDate(new Date())
                 .build();
-        if(request.getOrgAvatar() != null) {
-            String avtName = imageService.handleSaveImage(request.getOrgAvatar(), generateImageName());
-            org.setOrgAvatar("/api/image"+avtName);
-        }
-        if(request.getOrgBackGround() != null) {
-            String backgroundName = imageService.handleSaveImage(request.getOrgBackGround(), generateImageName());
-            org.setOrgBackground("/api/image"+backgroundName);
-        }
         handleSaveRepository(org);
+        if(request.getMemberIds() == null) {
+            memberService.addMembers(org.getOrgId(), request.getAdminId(), new ArrayList<>());
+        } else {
+            memberService.addMembers(org.getOrgId(), request.getAdminId(), request.getMemberIds());
+        }
         return org;
     }
 
@@ -89,7 +92,12 @@ public class OrganizationService implements QnuService<Organization> {
         }
     }
 
-    public Organization deleteOrganization(String orgId) throws IdNotExistException {
+    public Organization deleteOrganization(String orgId, HttpServletRequest servletRequest) throws IdNotExistException, NoAuthorityToDoActionException {
+        var userId = jwtService.extractUserId(servletRequest);
+        var user = userRepository.getReferenceById(userId);
+        if(!user.isSuperAdmin()){
+            throw new NoAuthorityToDoActionException();
+        }
         try {
             Organization org = repository.getReferenceById(orgId);
             org.setDelFlg(true);
@@ -126,6 +134,9 @@ public class OrganizationService implements QnuService<Organization> {
 
     public List<Organization> getByUserId(String userId) {
         User user = userRepository.getReferenceById(userId);
+        if(user.isSuperAdmin()) {
+            return repository.findAllByDelFlg(false);
+        }
         var ids = JsonUtil.jsonStringToList(user.getOrgIds());
         return ids.isEmpty() ? new ArrayList<>(): repository.getByUserID(ids);
     }
