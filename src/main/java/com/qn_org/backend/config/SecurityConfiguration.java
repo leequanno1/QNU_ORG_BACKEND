@@ -24,6 +24,8 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/validation/send-forget-password-code").permitAll()
+                        .requestMatchers("/api/validation/change_forgot_password").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .requestMatchers("/api/image/**", "/favicon.ico").permitAll()
                         .anyRequest().authenticated()

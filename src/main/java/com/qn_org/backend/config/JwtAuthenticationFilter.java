@@ -45,6 +45,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     || request.getRequestURI().contains("/v3/api-docs")
                     || request.getRequestURI().contains("/swagger-ui")
                     || request.getRequestURI().contains("/api/image")
+                    || request.getRequestURI().contains("/api/validation/send-forget-password-code")
+                    || request.getRequestURI().contains("/api/validation/change_forgot_password")
                     || request.getRequestURI().contains("/favicon.ico")){
                 filterChain.doFilter(request,response);
                 return;

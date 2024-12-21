@@ -3,6 +3,7 @@ package com.qn_org.backend.controllers.user;
 import com.qn_org.backend.config.JwtService;
 import com.qn_org.backend.controllers.image.ImageService;
 import com.qn_org.backend.controllers.member.PreviewMember;
+import com.qn_org.backend.controllers.validation.ActiveAccountRequest;
 import com.qn_org.backend.controllers.validation.ChangePasswordRequest;
 import com.qn_org.backend.models.StaffInfo;
 import com.qn_org.backend.models.StudentInfo;
@@ -11,6 +12,7 @@ import com.qn_org.backend.models.ValidationCode;
 import com.qn_org.backend.models.enums.UserType;
 import com.qn_org.backend.repositories.*;
 import com.qn_org.backend.services.exceptions.IdNotExistException;
+import com.qn_org.backend.services.exceptions.InvalidValidationCodeException;
 import com.qn_org.backend.services.exceptions.NoAuthorityToDoActionException;
 import com.qn_org.backend.services.exceptions.ValidationCodeExpiredException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -73,28 +75,32 @@ public class UserService {
         return null;
     }
 
-    public String handleChangePassword(ChangePasswordRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException, ValidationCodeExpiredException {
+    public String handleChangePassword(ChangePasswordRequest request) throws NoAuthorityToDoActionException, ValidationCodeExpiredException, InvalidValidationCodeException {
         if (!request.getNewPassword().equals(request.getRepeatPassword())) {
             throw new NoAuthorityToDoActionException();
         }
-        var userId = jwtService.extractUserId(servletRequest);
-        if (userId != null) {
-            var user = repository.getReferenceById(userId);
-            if (user.getEmailAddress().equals(request.getEmailAddress())) {
-                var validationCode = validationCodeRepository.findByValidationEmail(user.getEmailAddress());
-                if (validationCode != null && validationCode.getValidationCode().equals(request.getValidationCode())) {
-                    if(isValidationCodeExpired(validationCode)) {
-                        throw new ValidationCodeExpiredException();
-                    }
-                    validationCodeRepository.delete(validationCode);
-                    user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-                    repository.save(user);
-                    return "Change password successfully";
+        var userId = request.getUserId();
+        if (userId == null || userId.isBlank()) {
+            throw new NoAuthorityToDoActionException();
+        }
+        var user = repository.getReferenceById(userId);
+        var email = user.getEmailAddress();
+        if (email != null && !email.isBlank()) {
+            var validationCode = validationCodeRepository.findByValidationEmail(user.getEmailAddress());
+            if (validationCode != null && validationCode.getValidationCode().equals(request.getValidationCode())) {
+                if(isValidationCodeExpired(validationCode)) {
+                    throw new ValidationCodeExpiredException();
                 }
+                validationCodeRepository.delete(validationCode);
+                user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+                repository.save(user);
+                return "Change password successfully";
             }
         }
-        throw new NoAuthorityToDoActionException();
+        throw new InvalidValidationCodeException();
     }
+
+
 
     private boolean isValidationCodeExpired(ValidationCode validationCode) {
         var time = new Date().getTime() - validationCode.getInsDate().getTime();
@@ -159,5 +165,20 @@ public class UserService {
             }
         }
         throw new IdNotExistException();
+    }
+
+    public String handleActiveAccount(ActiveAccountRequest request, HttpServletRequest servletRequest) throws NoAuthorityToDoActionException {
+        var userId = jwtService.extractUserId(servletRequest);
+        var user = repository.getReferenceById(userId);
+        if(user.getUserId() != null) {
+            var email = user.getEmailAddress();
+            var validation = validationCodeRepository.findByValidationEmail(email);
+            if(validation != null && !validation.isDelFlg() && validation.getValidationCode().equals(request.getValidationCode())) {
+                user.setPasswordValidatedFlg(true);
+                repository.save(user);
+                return jwtService.generateToken(user);
+            }
+        }
+        throw new NoAuthorityToDoActionException();
     }
 }

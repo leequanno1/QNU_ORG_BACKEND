@@ -56,6 +56,7 @@ public class JwtService {
         claim.put("expr",new Date(System.currentTimeMillis() + 8640000));
         claim.put("is_super_admin", userDetails.isSuperAdmin());
         claim.put("is_password_validated", userDetails.isPasswordValidatedFlg());
+        claim.put("display_name", userDetails.getDisplayName());
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
