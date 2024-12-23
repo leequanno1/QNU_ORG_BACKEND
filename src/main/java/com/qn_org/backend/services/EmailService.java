@@ -1,7 +1,8 @@
-package com.qn_org.backend.controllers.validation;
+package com.qn_org.backend.services;
 
 import com.qn_org.backend.config.JwtService;
 import com.qn_org.backend.controllers.user.UserIdRequest;
+import com.qn_org.backend.controllers.validation.SendEmailRequest;
 import com.qn_org.backend.models.ValidationCode;
 import com.qn_org.backend.repositories.UserRepository;
 import com.qn_org.backend.repositories.ValidationCodeRepository;

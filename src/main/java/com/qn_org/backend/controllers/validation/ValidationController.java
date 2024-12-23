@@ -3,6 +3,7 @@ package com.qn_org.backend.controllers.validation;
 import com.qn_org.backend.controllers.user.UserIdRequest;
 import com.qn_org.backend.controllers.user.UserService;
 import com.qn_org.backend.responses.QnuResponseEntity;
+import com.qn_org.backend.services.EmailService;
 import com.qn_org.backend.services.exceptions.*;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
