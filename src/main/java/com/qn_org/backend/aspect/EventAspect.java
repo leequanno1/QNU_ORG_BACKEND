@@ -3,8 +3,11 @@ package com.qn_org.backend.aspect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.qn_org.backend.controllers.event.EventDTO;
+import com.qn_org.backend.repositories.MemberRepository;
 import com.qn_org.backend.repositories.OrganizationRepository;
+import com.qn_org.backend.repositories.UserRepository;
 import com.qn_org.backend.responses.QnuResponseEntity;
+import com.qn_org.backend.services.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -18,6 +21,9 @@ import org.springframework.stereotype.Component;
 public class EventAspect {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final OrganizationRepository organizationRepository;
+    private final EmailService emailService;
+    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final String EVENT_LOGGING_FILE_PATH = "D:\\GitHub\\ORG\\backend\\src\\public\\event_logging.csv";
     @Pointcut("execution(* com.qn_org.backend.controllers.event.EventController.joinEvent(..))")
     public void joinEventMethod() {}
@@ -40,6 +46,19 @@ public class EventAspect {
                 dynamicObject.put("joinerId", event.getUserId());
                 dynamicObject.put("orgId", event.getOrgId());
                 dynamicObject.put("orgName", org.getOrgName());
+
+                String mailTo = "", joinerName = "", orgName = "";
+                joinerName = userRepository.getReferenceById(event.getUserId()).getDisplayName();
+                var hoster  = memberRepository.getReferenceById(event.getHosterId());
+                orgName = hoster.getOrganization().getOrgName();
+                mailTo = userRepository.getReferenceById(hoster.getUserId()).getEmailAddress();
+
+                Thread emailThread = new Thread(new EmailHelper(
+                        emailService,
+                        mailTo,
+                        joinerName,
+                        orgName));
+                emailThread.start();
             }
             String jsonString = dynamicObject.toString();
             CsvHelper.writeJsonToCsv(jsonString, EVENT_LOGGING_FILE_PATH);
