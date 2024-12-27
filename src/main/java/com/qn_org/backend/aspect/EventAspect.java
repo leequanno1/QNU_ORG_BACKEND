@@ -24,7 +24,8 @@ public class EventAspect {
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final MemberRepository memberRepository;
-    private final String EVENT_LOGGING_FILE_PATH = "D:\\GitHub\\ORG\\backend\\src\\public\\event_logging.csv";
+    private final String EVENT_LOGGING_FILE_PATH = "src/public/event_logging.csv";
+
     @Pointcut("execution(* com.qn_org.backend.controllers.event.EventController.joinEvent(..))")
     public void joinEventMethod() {}
 
@@ -47,6 +48,7 @@ public class EventAspect {
                 dynamicObject.put("orgId", event.getOrgId());
                 dynamicObject.put("orgName", org.getOrgName());
 
+                // Send email to hoster
                 String mailTo = "", joinerName = "", orgName = "";
                 joinerName = userRepository.getReferenceById(event.getUserId()).getDisplayName();
                 var hoster  = memberRepository.getReferenceById(event.getHosterId());

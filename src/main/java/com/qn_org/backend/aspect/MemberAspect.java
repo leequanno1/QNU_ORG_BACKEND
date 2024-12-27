@@ -38,7 +38,7 @@ public class MemberAspect {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final String ROLE_MODIFY_LOGGING_FILE_PATH = "D:\\GitHub\\ORG\\backend\\src\\public\\role_modify_logging.csv";
+    private final String ROLE_MODIFY_LOGGING_FILE_PATH = "src/public/role_modify_logging.csv";
 
     @Pointcut("execution(* com.qn_org.backend.controllers.member.MemberController.add(..)) && args(..,orgId)")
     public void afterAdd(String orgId) {}
