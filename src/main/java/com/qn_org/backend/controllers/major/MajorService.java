@@ -24,12 +24,15 @@ public class MajorService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     public MajorDTO create(CreateMajorRequest request) {
+        var dep = depRepository.getReferenceById(request.getDepId());
         Major major = Major.builder()
-                .department(depRepository.getReferenceById(request.getDepId()))
+                .department(dep)
                 .majorName(request.getMajorName())
                 .insDate(new Date())
                 .build();
+        dep.setMajors(dep.getMajors()+1);
         majorRepository.save(major);
+        depRepository.save(dep);
         return new MajorDTO(major);
     }
 
@@ -44,6 +47,9 @@ public class MajorService {
     public MajorDTO delete(MajorIdRequest request) {
         Major major = majorRepository.getReferenceById(request.getMajorId());
         major.setDelFlg(true);
+        var dep = major.getDepartment();
+        dep.setMajors(dep.getMajors() - 1);
+        depRepository.save(dep);
         majorRepository.save(major);
         return new MajorDTO(major);
     }

@@ -83,6 +83,7 @@ public class MemberAspect {
     public void handleAfterAdd(String orgId) {
         modifyDataFlgCache.put(orgId,true);
     }
+    
     @After(value = "afterRemove(request)", argNames = "request")
     public void handleAfterRemove(MemberIdRequest request) {
         var member = memberRepository.getReferenceById(request.getMemberId());
@@ -91,6 +92,7 @@ public class MemberAspect {
             modifyDataFlgCache.put(orgId,true);
         } catch (Exception ignored) { }
     }
+
     @Around(value = "afterChangeRole(request, servletRequest)", argNames = "pjp,request,servletRequest")
     public Object handleAfterChangeRole(ProceedingJoinPoint pjp, ManageMember request, HttpServletRequest servletRequest) {
         Date startTime = new Date();

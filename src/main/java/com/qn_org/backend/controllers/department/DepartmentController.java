@@ -29,13 +29,13 @@ public class DepartmentController {
         return new QnuResponseEntity<>(service.createMany(request, servletRequest), HttpStatus.OK);
     }
 
-    @PutMapping("/update")
-    public QnuResponseEntity<Department> update(@RequestBody UpdateDepRequest request) throws IdNotExistException {
+    @PostMapping("/update")
+    public QnuResponseEntity<DepartmentDTO> update(@RequestBody UpdateDepRequest request) throws IdNotExistException {
         return new QnuResponseEntity<>(service.update(request), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete")
-    public QnuResponseEntity<Department> delete(@RequestBody DepIdRequest request) throws IdNotExistException {
+    public QnuResponseEntity<DepartmentDTO> delete(@RequestBody DepIdRequest request) throws IdNotExistException {
         return new QnuResponseEntity<>(service.delete(request),HttpStatus.OK);
     }
 

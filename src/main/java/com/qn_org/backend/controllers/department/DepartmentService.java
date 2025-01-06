@@ -3,8 +3,10 @@ package com.qn_org.backend.controllers.department;
 import com.qn_org.backend.common_requests.FromToIndexRequest;
 import com.qn_org.backend.config.JwtService;
 import com.qn_org.backend.models.Department;
+import com.qn_org.backend.models.Major;
 import com.qn_org.backend.models.User;
 import com.qn_org.backend.repositories.DepartmentRepository;
+import com.qn_org.backend.repositories.MajorRepository;
 import com.qn_org.backend.repositories.UserRepository;
 import com.qn_org.backend.services.exceptions.IdNotExistException;
 import com.qn_org.backend.services.exceptions.NoAuthorityToDoActionException;
@@ -23,6 +25,7 @@ public class DepartmentService {
     private final DepartmentRepository repository;
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final MajorRepository majorRepository;
     public Department createDep(CreateDepRequest request) {
         Department dep = Department.builder()
                 .departmentId("DEP_"+ UUID.randomUUID())
@@ -33,23 +36,28 @@ public class DepartmentService {
         return dep;
     }
 
-    public Department update(UpdateDepRequest request) throws IdNotExistException {
+    public DepartmentDTO update(UpdateDepRequest request) throws IdNotExistException {
         try {
             Department dep = repository.getReferenceById(request.getDepartmentId());
             dep.setDepName(request.getDepName());
             repository.save(dep);
-            return dep;
+            return new DepartmentDTO(dep);
         } catch (Exception e) {
             throw new IdNotExistException();
         }
     }
 
-    public Department delete(DepIdRequest request) throws IdNotExistException {
+    public DepartmentDTO delete(DepIdRequest request) throws IdNotExistException {
         try {
             Department dep = repository.getReferenceById(request.getDepartmentId());
             dep.setDelFlg(true);
+            List<Major> majors = majorRepository.getByDepId(request.getDepartmentId());
+            for(Major major : majors) {
+                major.setDelFlg(true);
+            }
+            majorRepository.saveAll(majors);
             repository.save(dep);
-            return dep;
+            return new DepartmentDTO(dep);
         } catch (Exception e) {
             throw new IdNotExistException();
         }
