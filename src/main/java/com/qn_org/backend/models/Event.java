@@ -1,8 +1,24 @@
 package com.qn_org.backend.models;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import lombok.Data;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "EVENT")
 public class Event {
 
@@ -29,84 +45,18 @@ public class Event {
     private String eventDescription;
 
     @Column(name = "PARTICIPANTS", nullable = false)
-    private int participants = 1;
+    private int participants = 0;
 
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date insDate;
+    private Date insDate = new Date();
 
     @Column(name = "DEL_FLG", nullable = false)
     private boolean delFlg = false;
 
-    public String getEventId() {
-        return eventId;
-    }
+    @Column(name = "IS_APPROVED", nullable = false)
+    private boolean isApproved = false;
 
-    public Date getBegin() {
-        return begin;
-    }
-
-    public Date getEnd() {
-        return end;
-    }
-
-    public Member getHoster() {
-        return hoster;
-    }
-
-    public String getEventName() {
-        return eventName;
-    }
-
-    public String getEventDescription() {
-        return eventDescription;
-    }
-
-    public int getParticipants() {
-        return participants;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public boolean isDelFlg() {
-        return delFlg;
-    }
-
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
-    }
-
-    public void setBegin(Date begin) {
-        this.begin = begin;
-    }
-
-    public void setEnd(Date end) {
-        this.end = end;
-    }
-
-    public void setHoster(Member hoster) {
-        this.hoster = hoster;
-    }
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
-    public void setEventDescription(String eventDescription) {
-        this.eventDescription = eventDescription;
-    }
-
-    public void setParticipants(int participants) {
-        this.participants = participants;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
-
-    public void setDelFlg(boolean delFlg) {
-        this.delFlg = delFlg;
-    }
+    @Column(name = "ORG_ID", nullable = false)
+    private String orgId;
 }

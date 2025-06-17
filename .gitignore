@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Image ###
+/src/public/images/*
+/src/main/resources/application.properties
+src/public/event_logging.csv
+src/public/role_modify_logging.csv

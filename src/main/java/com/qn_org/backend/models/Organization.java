@@ -1,9 +1,25 @@
 package com.qn_org.backend.models;
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.Data;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "ORGANIZATION")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Organization {
 
     @Id
@@ -16,10 +32,10 @@ public class Organization {
     @Column(name = "ORG_DESCRIPTION")
     private String orgDescription;
 
-    @Column(name = "ORG_AVARTA", nullable = false)
+    @Column(name = "ORG_AVATAR")
     private String orgAvatar;
 
-    @Column(name = "ORG_BACKGROUD", nullable = false)
+    @Column(name = "ORG_BACKGROUND")
     private String orgBackground;
 
     @Column(name = "MEMBERS", nullable = false)
@@ -33,90 +49,9 @@ public class Organization {
 
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date insDate;
+    private Date insDate = new Date();
 
     @Column(name = "DEL_FLG", nullable = false)
     private boolean delFlg = false;
 
-    // Getters and Setters
-
-    public String getOrgId() {
-        return orgId;
-    }
-
-    public String getOrgName() {
-        return orgName;
-    }
-
-    public String getOrgDescription() {
-        return orgDescription;
-    }
-
-    public String getOrgAvatar() {
-        return orgAvatar;
-    }
-
-    public String getOrgBackground() {
-        return orgBackground;
-    }
-
-    public int getMembers() {
-        return members;
-    }
-
-    public int getPosts() {
-        return posts;
-    }
-
-    public int getEvents() {
-        return events;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public boolean isDelFlg() {
-        return delFlg;
-    }
-
-    public void setOrgId(String orgId) {
-        this.orgId = orgId;
-    }
-
-    public void setOrgName(String orgName) {
-        this.orgName = orgName;
-    }
-
-    public void setOrgDescription(String orgDescription) {
-        this.orgDescription = orgDescription;
-    }
-
-    public void setOrgAvatar(String orgAvatar) {
-        this.orgAvatar = orgAvatar;
-    }
-
-    public void setOrgBackground(String orgBackground) {
-        this.orgBackground = orgBackground;
-    }
-
-    public void setMembers(int members) {
-        this.members = members;
-    }
-
-    public void setPosts(int posts) {
-        this.posts = posts;
-    }
-
-    public void setEvents(int events) {
-        this.events = events;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
-
-    public void setDelFlg(boolean delFlg) {
-        this.delFlg = delFlg;
-    }
 }

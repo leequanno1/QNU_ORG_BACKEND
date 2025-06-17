@@ -1,8 +1,24 @@
 package com.qn_org.backend.models;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import lombok.Data;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "POST_NOTIFICATION")
 public class PostNotification {
 
@@ -22,56 +38,9 @@ public class PostNotification {
 
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date insDate;
+    private Date insDate = new Date();
 
     @Column(name = "DEL_FLG", nullable = false)
     private boolean delFlg = false;
 
-    public String getPostNotiId() {
-        return postNotiId;
-    }
-
-    public String getPosterAvt() {
-        return posterAvt;
-    }
-
-    public String getPosterName() {
-        return posterName;
-    }
-
-    public Post getPost() {
-        return post;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public boolean isDelFlg() {
-        return delFlg;
-    }
-
-    public void setPostNotiId(String postNotiId) {
-        this.postNotiId = postNotiId;
-    }
-
-    public void setPosterAvt(String posterAvt) {
-        this.posterAvt = posterAvt;
-    }
-
-    public void setPosterName(String posterName) {
-        this.posterName = posterName;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
-
-    public void setDelFlg(boolean delFlg) {
-        this.delFlg = delFlg;
-    }
 }

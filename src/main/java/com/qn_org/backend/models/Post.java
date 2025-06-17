@@ -1,9 +1,27 @@
 package com.qn_org.backend.models;
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import lombok.Data;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "POST")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Post {
 
     @Id
@@ -25,65 +43,16 @@ public class Post {
 
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date insDate;
+    private Date insDate = new Date();
 
     @Column(name = "DEL_FLG", nullable = false)
     private boolean delFlg = false;
 
-    public String getPostId() {
-        return postId;
-    }
+    @Column(name = "IS_APPROVED", nullable = false)
+    private boolean isApproved = false;
 
-    public Member getPoster() {
-        return poster;
-    }
+    @Column(name = "ORG_ID")
+    private String orgId;
 
-    public String getPostTitle() {
-        return postTitle;
-    }
-
-    public String getPostContent() {
-        return postContent;
-    }
-
-    public int getComments() {
-        return comments;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public boolean isDelFlg() {
-        return delFlg;
-    }
-
-    public void setPostId(String postId) {
-        this.postId = postId;
-    }
-
-    public void setPoster(Member poster) {
-        this.poster = poster;
-    }
-
-    public void setPostTitle(String postTitle) {
-        this.postTitle = postTitle;
-    }
-
-    public void setPostContent(String postContent) {
-        this.postContent = postContent;
-    }
-
-    public void setComments(int comments) {
-        this.comments = comments;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
-
-    public void setDelFlg(boolean delFlg) {
-        this.delFlg = delFlg;
-    }
 }
 

@@ -1,8 +1,25 @@
 package com.qn_org.backend.models;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import lombok.Data;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Calendar;
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "USER_NOTIFICATION")
 public class UserNotification {
 
@@ -23,57 +40,17 @@ public class UserNotification {
 
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date insDate;
+    private Date insDate = new Date();
 
     @Column(name = "DEL_DATE", nullable = false)
-    private Date delDate;
+    private Date delDate = dateAfter3Months();
 
-    public String getUserNotiId() {
-        return userNotiId;
+    private Date dateAfter3Months() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MONTH, 3);
+        return calendar.getTime();
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public ObservableNotification getNotification() {
-        return notification;
-    }
-
-    public boolean isRead() {
-        return isRead;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public Date getDelDate() {
-        return delDate;
-    }
-
-    public void setUserNotiId(String userNotiId) {
-        this.userNotiId = userNotiId;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setNotification(ObservableNotification notification) {
-        this.notification = notification;
-    }
-
-    public void setRead(boolean read) {
-        isRead = read;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
-
-    public void setDelDate(Date delDate) {
-        this.delDate = delDate;
-    }
 }
 

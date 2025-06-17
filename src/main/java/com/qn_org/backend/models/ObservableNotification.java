@@ -1,8 +1,22 @@
 package com.qn_org.backend.models;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.Data;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "OBSERVERBLE_NOTIFICATION")
 public class ObservableNotification {
 
@@ -24,53 +38,6 @@ public class ObservableNotification {
 
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date insDate;
+    private Date insDate = new Date();
 
-    public String getNotificationId() {
-        return notificationId;
-    }
-
-    public String getNotiAvatar() {
-        return notiAvatar;
-    }
-
-    public String getNotiName() {
-        return notiName;
-    }
-
-    public int getNotiType() {
-        return notiType;
-    }
-
-    public String getTargetUrl() {
-        return targetUrl;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public void setNotificationId(String notificationId) {
-        this.notificationId = notificationId;
-    }
-
-    public void setNotiAvatar(String notiAvatar) {
-        this.notiAvatar = notiAvatar;
-    }
-
-    public void setNotiName(String notiName) {
-        this.notiName = notiName;
-    }
-
-    public void setNotiType(int notiType) {
-        this.notiType = notiType;
-    }
-
-    public void setTargetUrl(String targetUrl) {
-        this.targetUrl = targetUrl;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
 }

@@ -1,8 +1,24 @@
 package com.qn_org.backend.models;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import lombok.Data;
+import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Date;
 
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "MAJOR")
 public class Major {
 
@@ -22,45 +38,6 @@ public class Major {
 
     @Column(name = "INS_DATE", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date insDate;
+    private Date insDate = new Date();
 
-    public String getMajorId() {
-        return majorId;
-    }
-
-    public Department getDepartment() {
-        return department;
-    }
-
-    public String getMajorName() {
-        return majorName;
-    }
-
-    public boolean isDelFlg() {
-        return delFlg;
-    }
-
-    public Date getInsDate() {
-        return insDate;
-    }
-
-    public void setMajorId(String majorId) {
-        this.majorId = majorId;
-    }
-
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
-
-    public void setMajorName(String majorName) {
-        this.majorName = majorName;
-    }
-
-    public void setDelFlg(boolean delFlg) {
-        this.delFlg = delFlg;
-    }
-
-    public void setInsDate(Date insDate) {
-        this.insDate = insDate;
-    }
 }
