@@ -37,8 +37,7 @@ spring.mail.password=your_email_password
 
 1. **Clone the repository:**
     ```bash
-    git clone https://github.com/your-org/your-repo.git
-    cd backend
+    git clone https://github.com/leequanno1/QNU_ORG_BACKEND.git
     ```
 
 2. **Configure the database and application properties as above.**
